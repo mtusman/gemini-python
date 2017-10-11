@@ -83,3 +83,23 @@ class PrivateClient(metaclass=Cached):
 
     def get_trade_volume(self):
         return self.api_query('/v1/tradevolume')
+
+    # Fund Management API
+    def get_balance(self):
+        return self.api_query('/v1/balances')
+
+    def create_deposit_address(self, currency, label=None):
+        if label:
+            payload = {
+                "label": label
+            }
+        else:
+            payload = {}
+        return self.api_query('/v1/deposit/{}/newAddress'.format(currency), payload)
+
+    def withdraw_to_address(self, currency, address, amount):
+        payload = {
+            "address": address,
+            "amount": amount
+        }
+        return self.api_query('/v1/withdraw/{}'.format(currency), payload)

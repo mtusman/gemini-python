@@ -40,6 +40,7 @@ class PrivateClient(metaclass=Cached):
         r = requests.post(request_url, headers=headers)
         return r.json()
 
+    # Order Placement API
     def new_order(self, symbol, amount, price, side, options):
         payload = {
             'symbol': symbol,
@@ -62,3 +63,23 @@ class PrivateClient(metaclass=Cached):
 
     def cancel_all_order(self):
         return self.api_query('/v1/order/cancel/all')
+
+    # Order Status API
+    def status_orders(self, order_id):
+        payload = {
+            'order_id': order_id
+        }
+        return self.api_query('/v1/order/status', payload)
+
+    def active_orders(self):
+        return self.api_query('/v1/orders')
+
+    def get_past_trades(self, symbol, limit_trades=None):
+        payload = {
+            "symbol": symbol,
+            "limit_trades": 500 if limit_trades is None else limit_trades
+        }
+        return self.api_query('/v1/mytrades', payload)
+
+    def get_trade_volume(self):
+        return self.api_query('/v1/tradevolume')

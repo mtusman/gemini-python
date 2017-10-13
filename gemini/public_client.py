@@ -10,11 +10,10 @@ import datetime
 
 
 class PublicClient(metaclass=Cached):
-    def __init__(self, product_id):
-        self.product_id = product_id
-        self.base_url = 'https://api.gemini.com/v1'
+    def __init__(self):
+        self.public_base_url = 'https://api.gemini.com/v1'
 
-    def get_ticker(self):
+    def get_ticker(self, product_id):
         ''' This endpoint retrieves information about recent trading
         activity for the symbol
 
@@ -31,10 +30,10 @@ class PublicClient(metaclass=Cached):
                   "last": "4269.50"
                 }
         '''
-        r = requests.get(self.base_url + '/pubticker/' + self.product_id)
+        r = requests.get(self.public_base_url + '/pubticker/' + product_id)
         return r.json()
 
-    def get_current_order_book(self):
+    def get_current_order_book(self, product_id):
         ''' This endpoint retreives information about the recents orders
 
         Returns:
@@ -51,12 +50,12 @@ class PublicClient(metaclass=Cached):
               ]
             }
         '''
-        r = requests.get(self.base_url + '/book/' + self.product_id)
+        r = requests.get(self.public_base_url + '/book/' + product_id)
         return r.json()
 
-    def get_trade_history(self, *, since=None):
-        ''' This endpoint will return the trades that have executed since the 
-        specified timestamp. Timestamps are either seconds or milliseconds 
+    def get_trade_history(self, product_id, *, since=None):
+        ''' This endpoint will return the trades that have executed since the
+        specified timestamp. Timestamps are either seconds or milliseconds
         since the epoch (1970-01-01).
 
         Returns:
@@ -76,15 +75,15 @@ class PublicClient(metaclass=Cached):
             ]
         '''
         if since is None:
-            r = requests.get(self.base_url + '/trades/' + self.product_id)
+            r = requests.get(self.public_base_url + '/trades/' + product_id)
         else:
             self.timestamp = time.mktime(datetime.datetime.strptime(since,
                                                                     "%d/%m/%Y").timetuple())
-            r = requests.get(self.base_url + '/trades/{}?since={}'.format(
-                self.product_id, int(self.timestamp)))
+            r = requests.get(self.public_base_url + '/trades/{}?since={}'.format(
+                product_id, int(self.timestamp)))
         return r.json()
 
-    def get_auction_history(self, *, since=None):
+    def get_auction_history(self, product_id, *, since=None):
         ''' This will return the auction events, optionally including 
         publications of indicative prices, since the specific timestamp.
 
@@ -108,12 +107,12 @@ class PublicClient(metaclass=Cached):
             ]
         '''
         if since is None:
-            r = requests.get(self.base_url + '/auction/' + self.product_id)
+            r = requests.get(self.public_base_url + '/auction/' + product_id)
         else:
             self.timestamp = time.mktime(datetime.datetime.strptime(since,
                                                                     "%d/%m/%Y").timetuple())
-            r = requests.get(self.base_url + '/auction/{}?since={}'.format(
-                self.product_id, int(self.timestamp)))
+            r = requests.get(self.public_base_url + '/auction/{}?since={}'.format(
+                product_id, int(self.timestamp)))
         return r.json()
 
     @classmethod
@@ -124,5 +123,5 @@ class PublicClient(metaclass=Cached):
             list: Will output an array of supported symbols
             example: [ "btcusd", "ethusd", "ethbtc" ]
         '''
-        r = requests.get(self.base_url + '/symbols')
+        r = requests.get(self.public_base_url + '/symbols')
         return r.json()

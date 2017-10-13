@@ -3,7 +3,7 @@
 #
 # A python wrapper for Gemini's public API
 
-from cached import Cached
+from public_client import PublicClient
 import requests
 import json
 import hmac
@@ -12,11 +12,12 @@ import base64
 import time
 
 
-class PrivateClient(metaclass=Cached):
+class PrivateClient(PublicClient):
     def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
-        self._base_url = 'https://api.gemini.com/'
+        self._base_url = 'https://api.sandbox.gemini.com'
+        self.public_base_url = 'https://api.gemini.com/v1'
 
     def api_query(self, method, payload=None):
         if payload is None:
@@ -42,6 +43,32 @@ class PrivateClient(metaclass=Cached):
 
     # Order Placement API
     def new_order(self, symbol, amount, price, side, options):
+        ''' This endpoint is used for the creation of a new order.
+            Requires you to provide the symbol, amount, price, side and options.
+            Options is an array and should include on the following:
+            "maker-or-cancel","immediate-or-cancel", auction-only"
+            So far Gemini only supports "type" as "exchange limit".
+
+        Returns:
+                dict: These are the same fields returned by order/status
+                example: {
+                    "order_id": "22333",
+                    "client_order_id": "20150102-4738721",
+                    "symbol": "btcusd",
+                    "price": "34.23",
+                    "avg_execution_price": "34.24",
+                    "side": "buy",
+                    "type": "exchange limit",
+                    "timestamp": "128938491",
+                    "timestampms": 128938491234,
+                    "is_live": true,
+                    "is_cancelled": false,
+                    "options": ["maker-or-cancel"],
+                    "executed_amount": "12.11",
+                    "remaining_amount": "16.22",
+                    "original_amount": "28.33"
+                }
+        '''
         payload = {
             'symbol': symbol,
             'amount': amount,
@@ -53,28 +80,84 @@ class PrivateClient(metaclass=Cached):
         return self.api_query('/v1/order/new', payload)
 
     def cancel_order(self, order_id):
+        ''' Used for the cancellation of an order via it's ID. This ID is provided
+        when the user creates a new order. '''
         payload = {
             'order_id': order_id
         }
         return self.api_query('/v1/order/cancel', payload)
 
     def cancel_session_order(self):
+        ''' Used for the cancellation of all orders in a session.
+
+        Results:
+            dict: The response will be a JSON object with the single field "
+            result" with value "true"
+        '''
         return self.api_query('/v1/order/cancel/session')
 
     def cancel_all_order(self):
+        ''' Cancels all current orders open.
+
+        Results:
+            dict: The response will be a JSON object with the single field
+            "result" with value "true"
+        '''
         return self.api_query('/v1/order/cancel/all')
 
     # Order Status API
     def status_orders(self, order_id):
+        ''' Get's the status of an order.
+        Note: the API used to access this endpoint must have the "trader"
+        functionality assigned to it.
+
+        Results:
+            dict: Returns the order_id, id, symbol, exchange, avh_execution_price,
+            side, type, timestamp, timestampms, is_live, is_cancelled, is_hidden,
+            was_forced, exucuted_amount, remaining_amount, options, price and
+            original_amount
+            example: {
+                  "order_id" : "44375901",
+                  "id" : "44375901",
+                  "symbol" : "btcusd",
+                  "exchange" : "gemini",
+                  "avg_execution_price" : "400.00",
+                  "side" : "buy",
+                  "type" : "exchange limit",
+                  "timestamp" : "1494870642",
+                  "timestampms" : 1494870642156,
+                  "is_live" : false,
+                  "is_cancelled" : false,
+                  "is_hidden" : false,
+                  "was_forced" : false,
+                  "executed_amount" : "3",
+                  "remaining_amount" : "0",
+                  "options" : [ ],
+                  "price" : "400.00",
+                  "original_amount" : "3"
+            }
+        '''
         payload = {
             'order_id': order_id
         }
         return self.api_query('/v1/order/status', payload)
 
     def active_orders(self):
+        ''' Returns all the active_orders associated with the API.
+
+        Results:
+            array: An array of the results of /order/status for all your live orders
+        '''
         return self.api_query('/v1/orders')
 
     def get_past_trades(self, symbol, limit_trades=None):
+        ''' Returns all the past trades associated with the API.
+        Proviiding a limit_trade is optional. If not provided it'll output the
+        latest 500 trades (the default value).
+
+        Results:
+            array: An array of of dicts of the past trades
+        '''
         payload = {
             "symbol": symbol,
             "limit_trades": 500 if limit_trades is None else limit_trades
@@ -82,13 +165,30 @@ class PrivateClient(metaclass=Cached):
         return self.api_query('/v1/mytrades', payload)
 
     def get_trade_volume(self):
+        ''' Returns the trade volume associated with the API for the past
+        30 days.
+
+        Results:
+            array: An array of dicts of the past trades
+        '''
         return self.api_query('/v1/tradevolume')
 
     # Fund Management API
+
     def get_balance(self):
+        ''' This will show the available balances in the supported currencies.
+
+        Results:
+            array: An array of elements, with one block per currency
+        '''
         return self.api_query('/v1/balances')
 
     def create_deposit_address(self, currency, label=None):
+        ''' This will create a new cryptocurrency deposit address with an optional label.
+
+        Results:
+            dict: A dict of the following fields: currency, address, label
+        '''
         if label:
             payload = {
                 "label": label
@@ -98,8 +198,24 @@ class PrivateClient(metaclass=Cached):
         return self.api_query('/v1/deposit/{}/newAddress'.format(currency), payload)
 
     def withdraw_to_address(self, currency, address, amount):
+        ''' This will allow you to withdraw currency from the address
+        provided.
+        Note: Before you can withdraw cryptocurrency funds to a whitelisted
+        address, you need three things: cryptocurrency address whitelists
+        needs to be enabled for your account, the address you want to withdraw
+        funds to needs to already be on that whitelist and an API key with the
+        Fund Manager role added.
+
+        Results:
+            dict: A dict of the following fields: destination, amount, txHash
+        '''
         payload = {
             "address": address,
             "amount": amount
         }
         return self.api_query('/v1/withdraw/{}'.format(currency), payload)
+
+    # HeartBeat API
+    def revive_hearbeat(self):
+        ''' Revive the heartbeat if 'heartbeat' is selected for the API. '''
+        return self.api_query('/v1/heartbeat')

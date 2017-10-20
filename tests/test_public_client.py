@@ -35,3 +35,8 @@ class TestPublicClient:
         r = PublicClient()
         auction_history = r.get_auction_history("BTCUSD")
         assert auction_history is list or dict
+
+    def test_symbols(self):
+        r = PublicClient()
+        symbols = r.symbols()
+        assert type(symbols) is list

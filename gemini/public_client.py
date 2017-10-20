@@ -13,6 +13,16 @@ class PublicClient(metaclass=Cached):
     def __init__(self):
         self.public_base_url = 'https://api.gemini.com/v1'
 
+    def symbols(self):
+        ''' This endpoint retrieves all available symbols for trading.
+
+        Returns:
+            list: Will output an array of supported symbols
+            example: [ "btcusd", "ethusd", "ethbtc" ]
+        '''
+        r = requests.get(self.public_base_url + '/symbols')
+        return r.json()
+
     def get_ticker(self, product_id):
         ''' This endpoint retrieves information about recent trading
         activity for the symbol.
@@ -114,15 +124,4 @@ class PublicClient(metaclass=Cached):
                                                                     "%d/%m/%Y").timetuple())
             r = requests.get(self.public_base_url + '/auction/{}?since={}'.format(
                 product_id, int(self.timestamp)))
-        return r.json()
-
-    @classmethod
-    def symbols(self):
-        ''' This endpoint retrieves all available symbols for trading.
-
-        Returns:
-            list: Will output an array of supported symbols
-            example: [ "btcusd", "ethusd", "ethbtc" ]
-        '''
-        r = requests.get(self.public_base_url + '/symbols')
         return r.json()

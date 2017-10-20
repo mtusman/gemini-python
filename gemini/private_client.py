@@ -3,7 +3,7 @@
 #
 # A python wrapper for Gemini's public API
 
-from public_client import PublicClient
+from .public_client import PublicClient
 import requests
 import json
 import hmac
@@ -44,10 +44,10 @@ class PrivateClient(PublicClient):
     # Order Placement API
     def new_order(self, symbol, amount, price, side, options):
         ''' This endpoint is used for the creation of a new order.
-            Requires you to provide the symbol, amount, price, side and options.
-            Options is an array and should include on the following:
-            "maker-or-cancel","immediate-or-cancel", auction-only"
-            So far Gemini only supports "type" as "exchange limit".
+        Requires you to provide the symbol, amount, price, side and options.
+        Options is an array and should include on the following:
+        "maker-or-cancel","immediate-or-cancel", auction-only"
+        So far Gemini only supports "type" as "exchange limit".
 
         Returns:
                 dict: These are the same fields returned by order/status
@@ -152,7 +152,7 @@ class PrivateClient(PublicClient):
 
     def get_past_trades(self, symbol, limit_trades=None):
         ''' Returns all the past trades associated with the API.
-        Proviiding a limit_trade is optional. If not provided it'll output the
+        Providing a limit_trade is optional. If not provided it'll output the
         latest 500 trades (the default value).
 
         Results:

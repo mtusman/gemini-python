@@ -3,7 +3,7 @@
 #
 # A python wrapper for Gemini's public API
 
-from cached import Cached
+from .cached import Cached
 import requests
 import time
 import datetime
@@ -15,7 +15,7 @@ class PublicClient(metaclass=Cached):
 
     def get_ticker(self, product_id):
         ''' This endpoint retrieves information about recent trading
-        activity for the symbol
+        activity for the symbol.
 
         Returns:
                 dict: the latest bid, ask, last price qouted and the volume
@@ -34,7 +34,7 @@ class PublicClient(metaclass=Cached):
         return r.json()
 
     def get_current_order_book(self, product_id):
-        ''' This endpoint retreives information about the recents orders
+        ''' This endpoint retreives information about the recents orders.
 
         Returns:
             dict: This will return the current order book, as two arrays,
@@ -84,12 +84,13 @@ class PublicClient(metaclass=Cached):
         return r.json()
 
     def get_auction_history(self, product_id, *, since=None):
-        ''' This will return the auction events, optionally including 
+        ''' This will return the auction events, optionally including
         publications of indicative prices, since the specific timestamp.
 
         Returns:
             format: 'since' must be in DD/MM/YYYY format
-            list: Will return at most 500 records
+            list: Will return at most 500 records if date is provided.
+            Otherwise it'll output a dictionary for the current auction
             example:[
                 {
                     "auction_id": 3,
@@ -117,7 +118,7 @@ class PublicClient(metaclass=Cached):
 
     @classmethod
     def symbols(self):
-        ''' This endpoint retrieves all available symbols for trading
+        ''' This endpoint retrieves all available symbols for trading.
 
         Returns:
             list: Will output an array of supported symbols

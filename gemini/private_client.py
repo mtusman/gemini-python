@@ -207,7 +207,6 @@ class PrivateClient(PublicClient):
         return self.api_query('/v1/tradevolume')
 
     # Fund Management API
-
     def get_balance(self):
         ''' This will show the available balances in the supported currencies.
 

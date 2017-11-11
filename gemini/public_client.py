@@ -18,7 +18,7 @@ class PublicClient(metaclass=Cached):
 
         Returns:
             list: Will output an array of supported symbols
-            example: [ "btcusd", "ethusd", "ethbtc" ]
+            example: ['btcusd', 'ethbtc', 'ethusd']
         '''
         r = requests.get(self.public_base_url + '/symbols')
         return r.json()
@@ -30,14 +30,14 @@ class PublicClient(metaclass=Cached):
         Returns:
                 dict: the latest bid, ask, last price qouted and the volume
                 example: {
-                  "bid": "4269.50",
-                  "ask": "4269.51",
-                  "volume": {
-                    "BTC": "5586.1638562221",
-                    "USD": "24176720.342631938501",
-                    "timestamp": 1507060200000
-                  },
-                  "last": "4269.50"
+                    'bid': '6398.99',
+                    'ask': '6399.00',
+                    'volume': {
+                                'BTC': '15122.8052525982',
+                                'USD': '100216283.474911855175',
+                                'timestamp': 1510407900000
+                            },
+                    'last': '6398.99'
                 }
         '''
         r = requests.get(self.public_base_url + '/pubticker/' + product_id)
@@ -50,11 +50,12 @@ class PublicClient(metaclass=Cached):
             dict: This will return the current order book, as two arrays,
             one of bids, and one of asks
             example:{
-              "bids": [ /* bids look like asks */ ],
-              "asks": [
+              'bids': [ /* bids look like asks */ ],
+              'asks': [
                 {
-                  "price": "822.12",  // Note these are sent as strings
-                  "amount": "12.1"  // Ditto
+                    'price': '6400.00',
+                    'amount': '3.04177064',
+                    'timestamp': '1510408074'
                 },
                 ...
               ]
@@ -73,13 +74,13 @@ class PublicClient(metaclass=Cached):
             list: Will return at most 500 records
             example:[
               {
-                "timestamp": 1420088400,
-                "timestampms": 1420088400122,
-                "tid": 155814,
-                "price": "822.12",
-                "amount": "12.10",
-                "exchange": "gemini",
-                "type": "buy"
+                'timestamp': 1510408136,
+                'timestampms': 1510408136595,
+                'tid': 2199657585,
+                'price': '6399.02',
+                'amount': '0.03906848',
+                'exchange': 'gemini',
+                'type': 'buy'
               },
               ...
             ]
@@ -103,16 +104,13 @@ class PublicClient(metaclass=Cached):
             Otherwise it'll output a dictionary for the current auction
             example:[
                 {
-                    "auction_id": 3,
-                    "auction_price": "628.775",
-                    "auction_quantity": "66.32225622",
-                    "eid": 4066,
-                    "highest_bid_price": "628.82",
-                    "lowest_ask_price": "629.48",
-                    "auction_result": "success",
-                    "timestamp": 1471902531,
-                    "timestampms": 1471902531225,
-                    "event_type": "auction"
+                    'last_auction_price': '6580.01',
+                    'last_auction_quantity': '0.01515964',
+                    'last_highest_bid_price': '6580.00',
+                    'last_lowest_ask_price': '6580.01',
+                    'next_update_ms': 1510433400000,
+                    'next_auction_ms': 1510434000000,
+                    'last_auction_eid': 2199289141
                 },
                 ...
             ]

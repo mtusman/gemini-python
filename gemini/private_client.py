@@ -16,7 +16,7 @@ class PrivateClient(PublicClient):
     def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
-        self._base_url = 'https://api.sandbox.gemini.com'
+        self._base_url = 'https://api.gemini.com'
         self.public_base_url = 'https://api.gemini.com/v1'
 
     def api_query(self, method, payload=None):
@@ -50,24 +50,27 @@ class PrivateClient(PublicClient):
         So far Gemini only supports "type" as "exchange limit".
 
         Returns:
-                dict: These are the same fields returned by order/status
-                example: {
-                    "order_id": "22333",
-                    "client_order_id": "20150102-4738721",
-                    "symbol": "btcusd",
-                    "price": "34.23",
-                    "avg_execution_price": "34.24",
-                    "side": "buy",
-                    "type": "exchange limit",
-                    "timestamp": "128938491",
-                    "timestampms": 128938491234,
-                    "is_live": true,
-                    "is_cancelled": false,
-                    "options": ["maker-or-cancel"],
-                    "executed_amount": "12.11",
-                    "remaining_amount": "16.22",
-                    "original_amount": "28.33"
-                }
+            dict: These are the same fields returned by order/status
+            example: {
+                'order_id': '86403510',
+                'id': '86403510',
+                'symbol': 'btcusd',
+                'exchange': 'gemini',
+                'avg_execution_price': '0.00',
+                'side': 'buy',
+                'type': 'exchange limit',
+                'timestamp': '1510403257',
+                'timestampms': 1510403257453,
+                'is_live': True,
+                'is_cancelled': False,
+                'is_hidden': False,
+                'was_forced': False,
+                'executed_amount': '0',
+                'remaining_amount': '0.02',
+                'options': ['maker-or-cancel'],
+                'price': '6400.28',
+                'original_amount': '0.02'
+            }
         '''
         payload = {
             'symbol': symbol,
@@ -81,7 +84,31 @@ class PrivateClient(PublicClient):
 
     def cancel_order(self, order_id):
         ''' Used for the cancellation of an order via it's ID. This ID is provided
-        when the user creates a new order. '''
+        when the user creates a new order.
+
+        Results:
+            dict: These are the same fields returned by order/cancel
+            example: {
+                'order_id': '86403510',
+                'id': '86403510',
+                'symbol': 'btcusd',
+                'exchange': 'gemini',
+                'avg_execution_price': '0.00',
+                'side': 'buy',
+                'type': 'exchange limit',
+                'timestamp': '1510403257',
+                'timestampms': 1510403257453,
+                'is_live': False,
+                'is_cancelled': True,
+                'is_hidden': False,
+                'was_forced': False,
+                'executed_amount': '0',
+                'remaining_amount': '0.02',
+                'options': ['maker-or-cancel'],
+                'price': '6400.28',
+                'original_amount': '0.02'
+            }
+        '''
         payload = {
             'order_id': order_id
         }
@@ -91,22 +118,27 @@ class PrivateClient(PublicClient):
         ''' Used for the cancellation of all orders in a session.
 
         Results:
-            dict: The response will be a JSON object with the single field "
-            result" with value "true"
+            dict: The response will be a dict with two keys: "results"
+            and "details"
+            example: {
+                'result': 'ok',
+                'details': {
+                    'cancelledOrders': [86403350, 86403386, 86403503, 86403612],
+                    'cancelRejects': []
+                }
+            }
         '''
         return self.api_query('/v1/order/cancel/session')
 
-    def cancel_all_order(self):
+    def cancel_all_orders(self):
         ''' Cancels all current orders open.
 
-        Results:
-            dict: The response will be a JSON object with the single field
-            "result" with value "true"
+        Results: Same as cancel_session_order
         '''
         return self.api_query('/v1/order/cancel/all')
 
     # Order Status API
-    def status_orders(self, order_id):
+    def status_of_order(self, order_id):
         ''' Get's the status of an order.
         Note: the API used to access this endpoint must have the "trader"
         functionality assigned to it.
@@ -117,24 +149,24 @@ class PrivateClient(PublicClient):
             was_forced, exucuted_amount, remaining_amount, options, price and
             original_amount
             example: {
-                  "order_id" : "44375901",
-                  "id" : "44375901",
-                  "symbol" : "btcusd",
-                  "exchange" : "gemini",
-                  "avg_execution_price" : "400.00",
-                  "side" : "buy",
-                  "type" : "exchange limit",
-                  "timestamp" : "1494870642",
-                  "timestampms" : 1494870642156,
-                  "is_live" : false,
-                  "is_cancelled" : false,
-                  "is_hidden" : false,
-                  "was_forced" : false,
-                  "executed_amount" : "3",
-                  "remaining_amount" : "0",
-                  "options" : [ ],
-                  "price" : "400.00",
-                  "original_amount" : "3"
+                'order_id': '44375901',
+                'id': '44375901',
+                'symbol': 'btcusd',
+                'exchange': 'gemini',
+                'avg_execution_price': '400.00',
+                'side': 'buy',
+                'type': 'exchange limit',
+                'timestamp': '1494870642',
+                'timestampms': 1494870642156,
+                'is_live': False,
+                'is_cancelled': False,
+                'is_hidden': False,
+                'was_forced': False,
+                'executed_amount': '3',
+                'remaining_amount': '0',
+                'options': [],
+                'price': '400.00',
+                'original_amount': '3'
             }
         '''
         payload = {
@@ -146,7 +178,8 @@ class PrivateClient(PublicClient):
         ''' Returns all the active_orders associated with the API.
 
         Results:
-            array: An array of the results of /order/status for all your live orders
+            array: An array of the results of /order/status for all your live orders.
+            Each entry is similar to status_of_order
         '''
         return self.api_query('/v1/orders')
 
@@ -180,6 +213,22 @@ class PrivateClient(PublicClient):
 
         Results:
             array: An array of elements, with one block per currency
+            example: [
+                {
+                    'type': 'exchange',
+                    'currency': 'BTC',
+                    'amount': '19.17997442',
+                    'available': '19.17997442',
+                    'availableForWithdrawal': '19.17997442'
+                },
+                {
+                    'type': 'exchange',
+                    'currency': 'USD',
+                    'amount': '4831517.78',
+                    'available': '4831389.45',
+                    'availableForWithdrawal': '4831389.45'
+                }
+            ]
         '''
         return self.api_query('/v1/balances')
 

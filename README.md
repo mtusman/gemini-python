@@ -1,5 +1,5 @@
 # gemini-python-wrapper
-A python client for the gemini API (In Development)
+A python client for the gemini API
 
 ## Getting Started
 ### PublicClient
@@ -69,7 +69,7 @@ r.new_order("BTCUSD", "200", "6000", "buy", ["immediate-or-cancel"])
 ```python
 r.cancel_order("866403510")
 ```
-- [cancel_session_order](https://docs.gemini.com/rest-api/#cancel-all-session-orders)
+- [cancel_session_orders](https://docs.gemini.com/rest-api/#cancel-all-session-orders)
 ```python
 r.cancel_session_orders()
 ```
@@ -89,7 +89,7 @@ r.active_orders()
 ```python
 # Will get the last 500 past trades
 r.get_past_trades("BTCUSD")
-# Alternatively, you can set the limit_trades number to your loking
+# Alternatively, you can set the limit_trades number to your liking
 r.get_past_trades("BTCUSD", limit_trades="200")
 ```
 - [get_trade_volume](https://docs.gemini.com/rest-api/#get-trade-volume)

@@ -114,7 +114,7 @@ class PrivateClient(PublicClient):
         }
         return self.api_query('/v1/order/cancel', payload)
 
-    def cancel_session_order(self):
+    def cancel_session_orders(self):
         ''' Used for the cancellation of all orders in a session.
 
         Results:

@@ -51,13 +51,13 @@ class TestPrivateClient:
         assert "price" in cancel_order
         assert "original_amount" in cancel_order
 
-    def test_cancel_session_order(self):
+    def test_cancel_session_orders(self):
         r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
-        cancel_session_order = r.cancel_session_order()
-        assert type(cancel_session_order) is dict
-        assert "result" in cancel_session_order
-        assert "details" in cancel_session_order
+        cancel_session_orders = r.cancel_session_orders()
+        assert type(cancel_session_orders) is dict
+        assert "result" in cancel_session_orders
+        assert "details" in cancel_session_orders
 
     def test_cancel_orders(self):
         r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")

@@ -35,7 +35,7 @@ r.get_trade_history("BTCUSD", since="17/06/2017")
 ```python
 # Will get the latest 500 auctions
 r.get_auction_history("BTCUSD")
-Alternatively, it can be specified for a specific date
+# Alternatively, it can be specified for a specific date
 r.get_auction_history("BTCUSD", since="17/06/2017")
 # Note: 'since' is again a keyword argument!
 ```

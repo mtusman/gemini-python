@@ -117,7 +117,7 @@ r.revive_hearbeat()
 ```
 
 # Under Development
-- Base Websocket Class
-- [Support for Market Data Websocket](https://docs.gemini.com/websocket-api/#market-data)
+- ~~Base Websocket Class~~
+- [~~Support for Market Data Websocket~~](https://docs.gemini.com/websocket-api/#market-data)
 - [Support for Order Events Websocket](https://docs.gemini.com/websocket-api/#order-events)
 - Greater support for hearbeat API's

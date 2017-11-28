@@ -20,7 +20,7 @@ import time
 
 class OrderEventsWS(BaseWebSocket):
     def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
-        super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events')
+        super().__init__(base_url='wss://api.gemini.com/v1/order/events')
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
         self.order_book = OrderedDict()

@@ -76,7 +76,7 @@ class MarketDataWS(BaseWebSocket):
 
     def export_to_csv(self, dir, newline_selection=''):
         headers = ['type', 'tid', 'price', 'amount', 'makerSide']
-        with open(os.path.join(r'{}'.format(dir), 'gemini.csv'),
+        with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.csv'),
                   'w',
                   newline=newline_selection) as f:
             f_csv = csv.DictWriter(f, headers)
@@ -98,5 +98,6 @@ class MarketDataWS(BaseWebSocket):
     def export_to_xml(self, dir):
         rough_string = tostring(self._trades_to_xml(), 'utf-8')
         reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")
-        with open(os.path.join(r'{}'.format(dir), 'gemini.xml'), 'w') as f:
+        with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.xml'),
+                  'w') as f:
             f.write(reparsed)

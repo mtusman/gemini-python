@@ -7,6 +7,10 @@
 from .basewebsocket import BaseWebSocket
 from websocket import create_connection
 from collections import OrderedDict
+from xml.etree.ElementTree import Element, tostring
+from xml.dom import minidom
+import os
+import csv
 import json
 import hmac
 import hashlib
@@ -19,15 +23,20 @@ class OrderEventsWS(BaseWebSocket):
         super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events')
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
-        self.hearbeats = []
-        self.initial_orders = []
-        self.accepted_orders = []
-        self.rejected_orders = []
-        self.booked_orders = []
-        self.filled_orders = []
-        self.cancelled_orders = []
-        self.cancel_rejected_orders = []
-        self.closed_orders = []
+        self.order_book = OrderedDict()
+        self._reset_order_book()
+
+    @property
+    def get_order_types(self):
+        print("Order types are: subscription_ack', 'heartbeat', 'initial', "
+              "'accepted','rejected', 'booked', 'fill', 'cancelled', "
+              "cancel_rejected' or 'closed'")
+
+    def _reset_order_book(self):
+        order_types = ['subscription_ack', 'heartbeat', 'initial', 'accepted', 'rejected',
+                       'booked', 'fill', 'cancelled', 'cancel_rejected', 'closed']
+        for order_type in order_types:
+            self.order_book[order_type] = list()
 
     def api_query(self, method, payload=None):
         if payload is None:
@@ -50,41 +59,75 @@ class OrderEventsWS(BaseWebSocket):
                                     skip_utf8_validation=True)
 
     def on_message(self, msg):
-        if msg['type'] == 'heartbeat':
-            self.heartbeats.append(msg)
-        else:
+        if isinstance(msg, list):
             for order in msg:
-                if order['type'] == 'initial':
-                    self.initial_orders.append(order)
-                elif order['type'] == 'accepted':
-                    self.accepted_orders.append(order)
-                elif order['type'] == 'rejected':
-                    self.rejected_orders.append(order)
-                elif order['type'] == 'booked':
-                    self.booked_orders.append(order)
-                elif order['type'] == 'fill':
-                    self.filled_orders.append(order)
-                elif order['type'] == 'cancelled':
-                    self.cancelled_orders.append(order)
-                elif order['type'] == 'cancel_rejected':
-                    self.cancel_rejected_orders.append(order)
-                else:
-                    self.closed_orders.append(order)
+                self.order_book[order['type']].append(order)
+        elif msg['type'] == 'subscription_ack':
+            self.order_book['subscription_ack'].append(msg)
+        elif msg['type'] == 'heartbeat':
+            self.order_book['heartbeat'].append(msg)
+        else:
+            pass
 
     def get_order_book(self):
-        return {
-            'initial_orders': self.initial_orders,
-            'accepted_orders': self.accepted_orders,
-            'rejected_orders': self.rejected_orders,
-            'booked_orders': self.booked_orders,
-            'filled_orders': self.filled_orders,
-            'cancelled_orders': self.cancelled_orders,
-            'cancel_rejected_orders': self.cancel_rejected_orders,
-            'closed_orders': self.closed_orders
-        }
+        return self.order_book
+
+    def reset_order_book(self):
+        self._reset_order_book()
+        return self.get_order_book()
 
     def remove_order(self, type, order_id):
-        for index, order in enumerate(self.get_order_book()[type]):
-            if order['order_id'] == 'order_id':
-                self._pop = index
-        del self.order_books()[type][self._pop]
+        order_type = self.order_book[type]
+        for index, order in enumerate(order_type):
+            if order['order_id'] == order_id:
+                pop_index = index
+        try:
+            del order_type[pop_index]
+            print('Deleted order with order_id:{}'.format(order_id))
+        except NameError as e:
+            print('Order with order_id:{} does not exist '.format(order_id))
+
+    def export_to_csv(self, dir, type, newline_selection=''):
+        if type in self.order_book.keys():
+            order_type = self.order_book[type]
+            if len(order_type) >= 1:
+                headers = order_type[0].keys()
+                with open(os.path.join(r'{}'.format(dir), 'gemini_order_events.csv'),
+                          'w',
+                          newline=newline_selection) as f:
+                    f_csv = csv.DictWriter(f, headers)
+                    f_csv.writeheader()
+                    f_csv.writerows(order_type)
+                    print('Successfully exported to csv')
+        else:
+            print("Type {} does not exist. Please select from: "
+                  "'subscription_ack', 'heartbeat', 'initial', 'accepted', "
+                  "'rejected', 'booked', 'fill', 'cancelled', "
+                  "cancel_rejected' or 'closed'".format(type))
+
+    def _trades_to_xml(self, type):
+        ''' Turn a list of dicts into XML '''
+        order_type = self.order_book[type]
+        parent_elem = Element(type + 'orders')
+        for trade in order_type:
+            trade_elem = Element(type)
+            for key, val in trade.items():
+                child = Element(key)
+                child.text = str(val)
+                trade_elem.append(child)
+        parent_elem.append(trade_elem)
+        return parent_elem
+
+    def export_to_xml(self, dir, type):
+        if type in self.order_book.keys():
+            rough_string = tostring(self._trades_to_xml(type), 'utf-8')
+            reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")
+            with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.xml'),
+                      'w') as f:
+                f.write(reparsed)
+                print('Successfully exported to xml')
+        else:
+            print("Type {} does not exist. Please select from: "
+                  "'subscription_ack', 'heartbeat', 'initial', 'accepted', "
+                  "'rejected', 'booked', 'fill', 'cancelled', "
+                  "cancel_rejected' or 'closed'".format(type))

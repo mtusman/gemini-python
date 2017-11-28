@@ -74,7 +74,7 @@ class OrderEventsWS(BaseWebSocket):
 
     def reset_order_book(self):
         self._reset_order_book()
-        return self.get_order_book()
+        print('Order book reset to empty')
 
     def remove_order(self, type, order_id):
         order_type = self.order_book[type]

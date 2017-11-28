@@ -57,22 +57,38 @@ class MarketDataWS(BaseWebSocket):
         return result
 
     def add_to_bids(self, price, order):
-        if price in self.bids.keys():
-            self.bids[price].append(order)
+        if ('eventId' and 'timestamp' and 'price' and 'amount' and
+                'makerSide') in order:
+            if price in self.bids.keys():
+                self.bids[price].append(order)
+            else:
+                self.bids[price] = [order]
         else:
-            self.bids[price] = [order]
+            print("Orders must be a dict with the following keys: eventId, "
+                  "timestamp, price, amount and makerSide")
 
     def remove_from_bids(self, price):
-        del self.bids[price]
+        try:
+            del self.bids[price]
+        except KeyError as e:
+            print('No order with price {} found'.format(price))
 
     def add_to_asks(self, price, order):
-        if price in self.asks.keys():
-            self.asks[price].append(order)
+        if ('eventId' and 'timestamp' and 'price' and 'amount' and
+                'makerSide') in order:
+            if price in self.asks.keys():
+                self.asks[price].append(order)
+            else:
+                self.asks[price] = [order]
         else:
-            self.asks[price] = [order]
+            print("Orders enter manually must be a dict with the following "
+                  "keys: eventId, timestamp, price, amount and makerSide")
 
     def remove_from_asks(self, price):
-        del self.asks[price]
+        try:
+            del self.asks[price]
+        except KeyError as e:
+            print('No order with price {} found'.format(price))
 
     def export_to_csv(self, dir, newline_selection=''):
         headers = ['type', 'tid', 'price', 'amount', 'makerSide']

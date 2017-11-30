@@ -33,8 +33,12 @@ class OrderEventsWS(BaseWebSocket):
               "cancel_rejected' or 'closed'")
 
     def _reset_order_book(self):
-        order_types = ['subscription_ack', 'heartbeat', 'initial', 'accepted', 'rejected',
-                       'booked', 'fill', 'cancelled', 'cancel_rejected', 'closed']
+        ''' Will create a dict with all the following msg types to be received
+        by the websocket.
+        '''
+        order_types = ['subscription_ack', 'heartbeat', 'initial', 'accepted',
+                       'rejected', 'booked', 'fill', 'cancelled',
+                       'cancel_rejected', 'closed']
         for order_type in order_types:
             self.order_book[order_type] = list()
 
@@ -44,7 +48,8 @@ class OrderEventsWS(BaseWebSocket):
         payload['request'] = method
         payload['nonce'] = int(time.time() * 1000)
         b64_payload = base64.b64encode(json.dumps(payload).encode('utf-8'))
-        signature = hmac.new(self._private_key.encode('utf-8'), b64_payload, hashlib.sha384).hexdigest()
+        signature = hmac.new(self._private_key.encode('utf-8'),
+                             b64_payload, hashlib.sha384).hexdigest()
 
         headers = {
             'X-GEMINI-APIKEY': self._public_key,
@@ -59,6 +64,22 @@ class OrderEventsWS(BaseWebSocket):
                                     skip_utf8_validation=True)
 
     def on_message(self, msg):
+        ''' Each msg will either be a list or a dict. The first msg to be
+        recieved with be a subscription acknowledgement with the following
+        keys: 'type', 'accountId', 'subscriptionId', 'symbolFilter',
+        'apiSessionFilter' and 'eventTypeFilter'.
+
+        Any messages recieved further will be of two types: either a heartbeat
+        or a list of events. Gemini will send a hearbeat every 5 seconds and
+        recommends the user store all hearbeats. Each list of events will have
+        the following keys: 'type', 'socket_sequence', 'order_id', 'event_id',
+        'api_session', 'client_order_id', 'symbol', 'side', 'behavior',
+        'order_type', 'timestamp', 'timestampms', 'is_live', 'is_cancelled',
+        'is_hidden', 'avg_execution_price', 'executed_amount',
+        'remaining_amount', 'original_amount', 'price' and 'total_spend'. This
+        method will check the type of any orders and assign them to their
+        appropriate keys within self.order_book.
+        '''
         if isinstance(msg, list):
             for order in msg:
                 self.order_book[order['type']].append(order)
@@ -77,6 +98,9 @@ class OrderEventsWS(BaseWebSocket):
         print('Order book reset to empty')
 
     def remove_order(self, type, order_id):
+        ''' Will remove a order given a type within self.order_book and the
+        orders id number.
+        '''
         order_type = self.order_book[type]
         for index, order in enumerate(order_type):
             if order['order_id'] == order_id:
@@ -88,6 +112,11 @@ class OrderEventsWS(BaseWebSocket):
             print('Order with order_id:{} does not exist '.format(order_id))
 
     def export_to_csv(self, dir, type, newline_selection=''):
+        ''' Will export the orders of a specific type to a csv format. If the
+        type given is not in self.order_book then it'll print an error message
+        with instructions of the appropriate types to be entered.
+        Note: directory for the file to be saved must be given as raw input
+        '''
         if type in self.order_book.keys():
             order_type = self.order_book[type]
             if len(order_type) >= 1:
@@ -106,7 +135,7 @@ class OrderEventsWS(BaseWebSocket):
                   "cancel_rejected' or 'closed'".format(type))
 
     def _trades_to_xml(self, type):
-        ''' Turn a list of dicts into XML '''
+        ''' Turn a list of dicts into XML. '''
         order_type = self.order_book[type]
         parent_elem = Element(type + 'orders')
         for trade in order_type:
@@ -119,6 +148,11 @@ class OrderEventsWS(BaseWebSocket):
         return parent_elem
 
     def export_to_xml(self, dir, type):
+        ''' Will export the orders of a specific type to a xml format. If the
+        type given is not in self.order_book then it'll print an error message
+        with instructions of the appropriate types to be entered.
+        Note: directory for the file to be saved must be given as raw input.
+        '''
         if type in self.order_book.keys():
             rough_string = tostring(self._trades_to_xml(type), 'utf-8')
             reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")

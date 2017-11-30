@@ -12,7 +12,9 @@ import csv
 
 
 class MarketDataWS(BaseWebSocket):
-    ''' Market data is a public API that streams all the market data on a given symbol.'''
+    ''' Market data is a public API that streams all the market data on a
+    given symbol.
+    '''
 
     def __init__(self, product_id):
         super().__init__(base_url='wss://api.gemini.com/v1/marketdata/{}'
@@ -30,7 +32,7 @@ class MarketDataWS(BaseWebSocket):
         the following keys: 'type', 'tid', 'price', 'amount' and
         'makerSide'. If the first element of the list has type 'trade'
         then the method will append the trade to self.trades and add
-        the event to either bids or asks depending on the 'makerSide'
+        the event to either bids or asks depending on the 'makerSide'.
         '''
         if msg['socket_sequence'] >= 1:
             event = msg['events'][0]
@@ -42,7 +44,7 @@ class MarketDataWS(BaseWebSocket):
     def add(self, side, msg):
         ''' This method will create a custom order dict by extracting
         the appropriate information from the msg retrieved and then place the
-        dict to either self.bids or self.asks depending on the 'makerSide'
+        dict to either self.bids or self.asks depending on the 'makerSide'.
         '''
         trade_event = msg['events'][0]
         order = {
@@ -70,14 +72,14 @@ class MarketDataWS(BaseWebSocket):
 
     def search_price(self, price):
         ''' Will return the all the trades on either asks or bids with the
-        given price
+        given price.
         '''
         result = {'price': self.asks[price].extend(self.bids[price])}
         return result
 
     def add_to_bids(self, price, order):
         ''' Allows the user to manually add an order to bids given it's
-        an appropriate dict
+        an appropriate dict.
         '''
         if ('eventId' and 'timestamp' and 'price' and 'amount' and
                 'makerSide') in order:
@@ -97,7 +99,7 @@ class MarketDataWS(BaseWebSocket):
 
     def add_to_asks(self, price, order):
         ''' Allows the user to manually asks an order to bids given it's
-        an appropriate dict
+        an appropriate dict.
         '''
         if ('eventId' and 'timestamp' and 'price' and 'amount' and
                 'makerSide') in order:
@@ -116,7 +118,9 @@ class MarketDataWS(BaseWebSocket):
             print('No order with price {} found'.format(price))
 
     def export_to_csv(self, dir, newline_selection=''):
-        ''' Will export the trades recorded into a csv file '''
+        ''' Will export the trades recorded into a csv file.
+        Note: directory for the file to be saved must be given as raw input.
+        '''
         headers = ['type', 'tid', 'price', 'amount', 'makerSide']
         with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.csv'),
                   'w',
@@ -126,7 +130,7 @@ class MarketDataWS(BaseWebSocket):
             f_csv.writerows(self.trades)
 
     def _trades_to_xml(self):
-        ''' Turn a list of dicts into XML '''
+        ''' Turn a list of dicts into XML. '''
         parent_elem = Element('trades')
         for trade in self.trades:
             trade_elem = Element('trade')
@@ -138,7 +142,9 @@ class MarketDataWS(BaseWebSocket):
         return parent_elem
 
     def export_to_xml(self, dir):
-        ''' Will export the trades recorded into a xml file '''
+        ''' Will export the trades recorded into a xml file.
+        Note: directory for the file to be saved must be given as raw input.
+        '''
         rough_string = tostring(self._trades_to_xml(), 'utf-8')
         reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")
         with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.xml'),

@@ -74,7 +74,14 @@ class MarketDataWS(BaseWebSocket):
         ''' Will return the all the trades on either asks or bids with the
         given price.
         '''
-        result = {'price': self.asks[price].extend(self.bids[price])}
+        if price in self.asks and price in self.bids:
+            result = {'price': self.asks[price].extend(self.bids[price])}
+        elif price in self.asks:
+            result = {'price': self.asks[price]}
+        elif price in self.bids:
+            result = {'price': self.bids[price]}
+        else:
+            result = {'price': []}
         return result
 
     def add_to_bids(self, price, order):

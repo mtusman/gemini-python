@@ -1,11 +1,16 @@
+from .keys import public_key, private_key
 import sys
 sys.path.insert(0, '..')
 from gemini.private_client import PrivateClient
 
 
+def client():
+    return PrivateClient(public_key, private_key)
+
+
 class TestPrivateClient:
     def test_new_order(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         assert type(new_order) is dict
         assert "order_id" in new_order
@@ -28,7 +33,7 @@ class TestPrivateClient:
         assert "original_amount" in new_order
 
     def test_cancel_order(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         cancel_order = r.cancel_order(new_order["order_id"])
         assert type(cancel_order) is dict
@@ -52,7 +57,7 @@ class TestPrivateClient:
         assert "original_amount" in cancel_order
 
     def test_cancel_session_orders(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         cancel_session_orders = r.cancel_session_orders()
         assert type(cancel_session_orders) is dict
@@ -60,7 +65,7 @@ class TestPrivateClient:
         assert "details" in cancel_session_orders
 
     def test_cancel_orders(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         cancel_all_orders = r.cancel_all_orders()
         assert type(cancel_all_orders) is dict
@@ -68,7 +73,7 @@ class TestPrivateClient:
         assert "details" in cancel_all_orders
 
     def test_status_of_orders(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         status_of_order = r.status_of_order(new_order["order_id"])
         assert type(status_of_order) is dict
@@ -92,33 +97,33 @@ class TestPrivateClient:
         assert "original_amount" in status_of_order
 
     def test_active_orders(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         active_orders = r.active_orders()
         assert type(active_orders) is list
 
     def test_get_past_trades(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         get_past_trades = r.get_past_trades("BTCUSD")
         assert type(get_past_trades) is list
 
     def test_get_trade_volume(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         get_trade_volume = r.get_trade_volume()
         assert type(get_trade_volume) is list
 
     def test_get_balance(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         get_past_trades = r.get_past_trades("BTCUSD")
         assert type(get_past_trades) is list
 
     def test_get_balance(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         get_balance = r.get_balance()
         assert type(get_balance) is list
 
     def test_create_deposit_address(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         create_deposit_address = r.create_deposit_address("ETH", label="testing")
         assert type(create_deposit_address) is dict
 
@@ -128,6 +133,6 @@ class TestPrivateClient:
         assert type(withdraw_to_address) is dict
 
     def test_revive_heartbeat(self):
-        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        r = client()
         revive_hearbeat = r.revive_hearbeat()
         assert type(revive_hearbeat) is dict

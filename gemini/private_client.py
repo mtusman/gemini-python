@@ -11,13 +11,19 @@ import hashlib
 import base64
 import time
 
+# Turn sandbox=True when running test or want to use the sandbox api
+sandbox = False
+
 
 class PrivateClient(PublicClient):
     def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
         super().__init__()
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
-        self._base_url = 'https://api.gemini.com'
+        if sandbox:
+            self._base_url = 'https://api.sandbox.gemini.com'
+        else:
+            self._base_url = 'https://api.gemini.com'
 
     def api_query(self, method, payload=None):
         if payload is None:

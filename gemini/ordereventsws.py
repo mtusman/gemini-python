@@ -19,8 +19,11 @@ import time
 
 
 class OrderEventsWS(BaseWebSocket):
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
-        super().__init__(base_url='wss://api.gemini.com/v1/order/events')
+    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False):
+        if sandbox:
+            super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events')
+        else:
+            super().__init__(base_url='wss://api.gemini.com/v1/order/events')
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
         self.order_book = OrderedDict()
@@ -128,6 +131,8 @@ class OrderEventsWS(BaseWebSocket):
                     f_csv.writeheader()
                     f_csv.writerows(order_type)
                     print('Successfully exported to csv')
+            else:
+                print('No order with type {} recorded'.format(type))
         else:
             print("Type {} does not exist. Please select from: "
                   "'subscription_ack', 'heartbeat', 'initial', 'accepted', "
@@ -154,12 +159,15 @@ class OrderEventsWS(BaseWebSocket):
         Note: directory for the file to be saved must be given as raw input.
         '''
         if type in self.order_book.keys():
-            rough_string = tostring(self._trades_to_xml(type), 'utf-8')
-            reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")
-            with open(os.path.join(r'{}'.format(dir), 'gemini_market_data.xml'),
-                      'w') as f:
-                f.write(reparsed)
-                print('Successfully exported to xml')
+            if len(self.order_book[type]) >= 1:
+                rough_string = tostring(self._trades_to_xml(type), 'utf-8')
+                reparsed = minidom.parseString(rough_string).toprettyxml(indent="  ")
+                with open(os.path.join(r'{}'.format(dir), 'gemini_order_events.xml'),
+                          'w') as f:
+                    f.write(reparsed)
+                    print('Successfully exported to xml')
+            else:
+                print('No order with type {} recorded'.format(type))
         else:
             print("Type {} does not exist. Please select from: "
                   "'subscription_ack', 'heartbeat', 'initial', 'accepted', "

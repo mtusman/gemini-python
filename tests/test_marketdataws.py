@@ -8,7 +8,7 @@ def client():
     return MarketDataWS('btcusd')
 
 
-class TestOrderEventsWS:
+class TestMarketDataWS:
     def test_on_message(self):
         r = client()
         r.on_message({'eventId': 2364280145,

@@ -4,6 +4,7 @@
 # A python wrapper for Gemini's public API
 
 from .cached import Cached
+from .debugly import typeassert
 import requests
 import time
 import datetime
@@ -14,18 +15,24 @@ class PublicClient(metaclass=Cached):
         self.public_base_url = 'https://api.gemini.com/v1'
 
     def symbols(self):
-        ''' This endpoint retrieves all available symbols for trading.
+        """
+        This endpoint retrieves all available symbols for trading.
 
         Returns:
             list: Will output an array of supported symbols
             example: ['btcusd', 'ethbtc', 'ethusd']
-        '''
+        """
         r = requests.get(self.public_base_url + '/symbols')
         return r.json()
 
+    @typeassert(product_id=str)
     def get_ticker(self, product_id):
-        ''' This endpoint retrieves information about recent trading
+        """
+        This endpoint retrieves information about recent trading
         activity for the symbol.
+
+        Args:
+            product_id(str): Can be any value in self.symbols()
 
         Returns:
                 dict: the latest bid, ask, last price qouted and the volume
@@ -39,12 +46,17 @@ class PublicClient(metaclass=Cached):
                             },
                     'last': '6398.99'
                 }
-        '''
+        """
         r = requests.get(self.public_base_url + '/pubticker/' + product_id)
         return r.json()
 
+    @typeassert(product_id=str)
     def get_current_order_book(self, product_id):
-        ''' This endpoint retreives information about the recents orders.
+        """
+        This endpoint retreives information about the recents orders.
+
+        Args:
+            product_id(str): Can be any value in self.symbols()
 
         Returns:
             dict: This will return the current order book, as two arrays,
@@ -60,17 +72,22 @@ class PublicClient(metaclass=Cached):
                 ...
               ]
             }
-        '''
+        """
         r = requests.get(self.public_base_url + '/book/' + product_id)
         return r.json()
 
-    def get_trade_history(self, product_id, *, since=None):
-        ''' This endpoint will return the trades that have executed since the
+    @typeassert(product_id=str, since=str)
+    def get_trade_history(self, product_id, since=None):
+        """
+        This endpoint will return the trades that have executed since the
         specified timestamp. Timestamps are either seconds or milliseconds
         since the epoch (1970-01-01).
 
+        Args:
+            product_id(str): Can be any value in self.symbols()
+            since(str): Must be in DD/MM/YYYY format
+
         Returns:
-            format: 'since' must be in DD/MM/YYYY format
             list: Will return at most 500 records
             example:[
               {
@@ -84,7 +101,7 @@ class PublicClient(metaclass=Cached):
               },
               ...
             ]
-        '''
+        """
         if since is None:
             r = requests.get(self.public_base_url + '/trades/' + product_id)
         else:
@@ -94,12 +111,17 @@ class PublicClient(metaclass=Cached):
                 product_id, int(self.timestamp)))
         return r.json()
 
-    def get_auction_history(self, product_id, *, since=None):
-        ''' This will return the auction events, optionally including
+    @typeassert(product_id=str, since=str)
+    def get_auction_history(self, product_id, since=None):
+        """
+        This will return the auction events, optionally including
         publications of indicative prices, since the specific timestamp.
 
+        Args:
+            product_id(str): Can be any value in self.symbols()
+            since(str): must be in DD/MM/YYYY format
+
         Returns:
-            format: 'since' must be in DD/MM/YYYY format
             list: Will return at most 500 records if date is provided.
             Otherwise it'll output a dictionary for the current auction
             example:[
@@ -114,7 +136,7 @@ class PublicClient(metaclass=Cached):
                 },
                 ...
             ]
-        '''
+        """
         if since is None:
             r = requests.get(self.public_base_url + '/auction/' + product_id)
         else:

@@ -5,6 +5,7 @@
 # This is a private endpoint and so requires a private and public keys
 
 from .basewebsocket import BaseWebSocket
+from .debugly import typeassert
 from websocket import create_connection
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, tostring
@@ -19,6 +20,7 @@ import time
 
 
 class OrderEventsWS(BaseWebSocket):
+    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool)
     def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False):
         if sandbox:
             super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events')
@@ -36,15 +38,17 @@ class OrderEventsWS(BaseWebSocket):
               "cancel_rejected' or 'closed'")
 
     def _reset_order_book(self):
-        ''' Will create a dict with all the following msg types to be received
+        """
+        Will create a dict with all the following msg types to be received
         by the websocket.
-        '''
+        """
         order_types = ['subscription_ack', 'heartbeat', 'initial', 'accepted',
                        'rejected', 'booked', 'fill', 'cancelled',
                        'cancel_rejected', 'closed']
         for order_type in order_types:
             self.order_book[order_type] = list()
 
+    @typeassert(method=str, payload=dict)
     def api_query(self, method, payload=None):
         if payload is None:
             payload = {}
@@ -67,7 +71,8 @@ class OrderEventsWS(BaseWebSocket):
                                     skip_utf8_validation=True)
 
     def on_message(self, msg):
-        ''' Each msg will either be a list or a dict. The first msg to be
+        """
+        Each msg will either be a list or a dict. The first msg to be
         recieved with be a subscription acknowledgement with the following
         keys: 'type', 'accountId', 'subscriptionId', 'symbolFilter',
         'apiSessionFilter' and 'eventTypeFilter'.
@@ -82,7 +87,7 @@ class OrderEventsWS(BaseWebSocket):
         'remaining_amount', 'original_amount', 'price' and 'total_spend'. This
         method will check the type of any orders and assign them to their
         appropriate keys within self.order_book.
-        '''
+        """
         if isinstance(msg, list):
             for order in msg:
                 self.order_book[order['type']].append(order)
@@ -100,10 +105,16 @@ class OrderEventsWS(BaseWebSocket):
         self._reset_order_book()
         print('Order book reset to empty')
 
+    @typeassert(type=str, order_id=str)
     def remove_order(self, type, order_id):
-        ''' Will remove a order given a type within self.order_book and the
+        """
+        Will remove a order given a type within self.order_book and the
         orders id number.
-        '''
+
+        Args:
+            type(str): Can be any value in self.get_order_types
+            order_id(str): Must already be in self.order_book[type]
+        """
         order_type = self.order_book[type]
         for index, order in enumerate(order_type):
             if order['order_id'] == order_id:
@@ -114,12 +125,19 @@ class OrderEventsWS(BaseWebSocket):
         except NameError as e:
             print('Order with order_id:{} does not exist '.format(order_id))
 
+    @typeassert(dir=str, type=str, newline_selection=str)
     def export_to_csv(self, dir, type, newline_selection=''):
-        ''' Will export the orders of a specific type to a csv format. If the
+        """
+        Will export the orders of a specific type to a csv format. If the
         type given is not in self.order_book then it'll print an error message
         with instructions of the appropriate types to be entered.
         Note: directory for the file to be saved must be given as raw input
-        '''
+
+        Args:
+            dir(str): Must be in raw string
+            type(str): Can be any valie in self.get_order_types
+            newline_selection(str): Default value is ''
+        """
         if type in self.order_book.keys():
             order_type = self.order_book[type]
             if len(order_type) >= 1:
@@ -140,7 +158,9 @@ class OrderEventsWS(BaseWebSocket):
                   "cancel_rejected' or 'closed'".format(type))
 
     def _trades_to_xml(self, type):
-        ''' Turn a list of dicts into XML. '''
+        """
+        Turn a list of dicts into XML.
+        """
         order_type = self.order_book[type]
         parent_elem = Element(type + 'orders')
         for trade in order_type:
@@ -152,12 +172,18 @@ class OrderEventsWS(BaseWebSocket):
         parent_elem.append(trade_elem)
         return parent_elem
 
+    @typeassert(dir=str, type=str)
     def export_to_xml(self, dir, type):
-        ''' Will export the orders of a specific type to a xml format. If the
+        """
+        Will export the orders of a specific type to a xml format. If the
         type given is not in self.order_book then it'll print an error message
         with instructions of the appropriate types to be entered.
         Note: directory for the file to be saved must be given as raw input.
-        '''
+
+        Args:
+            dir(str): Must be in raw string
+            type(str): Can be any valie in self.get_order_types
+        """
         if type in self.order_book.keys():
             if len(self.order_book[type]) >= 1:
                 rough_string = tostring(self._trades_to_xml(type), 'utf-8')

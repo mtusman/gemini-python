@@ -1,5 +1,5 @@
 gemini/keys.txt 
 gemini/testing.py
-gemini/__pycache__
-tests/__pycache__
-tests/.cache
+*.pyc
+*~
+*.swp

@@ -5,7 +5,7 @@ from gemini.private_client import PrivateClient
 
 
 def client():
-    return PrivateClient(public_key, private_key)
+    return PrivateClient(public_key, private_key, sandbox=True)
 
 
 class TestPrivateClient:

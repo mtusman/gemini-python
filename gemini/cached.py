@@ -11,10 +11,10 @@ class Cached(type):
         self.__cache = weakref.WeakValueDictionary()
         super().__init__(*args, **kwargs)
 
-    def __call__(self, *args):
-        if args in self.__cache:
-            return self.__cache[args]
+    def __call__(self, *args, **kwargs):
+        if '{} {}'.format(args, kwargs) in self.__cache:
+            return self.__cache['{} {}'.format(args, kwargs)]
         else:
-            obj = super().__call__(*args)
-            self.__cache[args] = obj
+            obj = super().__call__(*args, **kwargs)
+            self.__cache['{} {}'.format(args, kwargs)] = obj
             return obj

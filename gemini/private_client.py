@@ -13,12 +13,10 @@ import base64
 import time
 
 # Turn sandbox=True when running test or want to use the sandbox api
-sandbox = True
 
 
 class PrivateClient(PublicClient):
-    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str)
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY):
+    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, *, sandbox=False):
         super().__init__()
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY

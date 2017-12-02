@@ -3,9 +3,13 @@ sys.path.insert(0, '..')
 from gemini.public_client import PublicClient
 
 
+def client():
+    return PublicClient(sandbox=True)
+
+
 class TestPublicClient:
     def test_get_ticker(self):
-        r = PublicClient()
+        r = client()
         ticker = r.get_ticker("BTCUSD")
         assert type(ticker) is dict
         assert "bid" in ticker
@@ -14,13 +18,13 @@ class TestPublicClient:
         assert "last" in ticker
 
     def test_get_current_order_book(self):
-        r = PublicClient()
+        r = client()
         order_book = r.get_current_order_book("BTCUSD")
         assert type(order_book) is dict
         assert "bid" or "ask" in order_book
 
     def test_get_trade_history(self):
-        r = PublicClient()
+        r = client()
         trade_history = r.get_trade_history("BTCUSD")
         assert type(trade_history) is list
         assert "timestamp" in trade_history[0]
@@ -32,11 +36,11 @@ class TestPublicClient:
         assert "type" in trade_history[0]
 
     def test_get_auction_history(self):
-        r = PublicClient()
+        r = client()
         auction_history = r.get_auction_history("BTCUSD")
         assert auction_history is list or dict
 
     def test_symbols(self):
-        r = PublicClient()
+        r = client()
         symbols = r.symbols()
         assert type(symbols) is list

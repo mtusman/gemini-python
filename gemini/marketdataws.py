@@ -17,10 +17,14 @@ class MarketDataWS(BaseWebSocket):
     Market data is a public API that streams all the market data on a
     given symbol.
     """
-    @typeassert(product_id=str)
-    def __init__(self, product_id):
-        super().__init__(base_url='wss://api.gemini.com/v1/marketdata/{}'
-                         .format(product_id))
+    @typeassert(product_id=str, sandbox=bool)
+    def __init__(self, product_id, sandbox=False):
+        if sandbox:
+            super().__init__(base_url='wss://api.gemini.com/v1/marketdata/{}'
+                             .format(product_id))
+        else:
+            super().__init__(base_url='wss://api.sandbox.gemini.com/v1/marketdata/{}'
+                             .format(product_id))
         self.product_id = product_id
         self.asks = OrderedDict()
         self.bids = OrderedDict()

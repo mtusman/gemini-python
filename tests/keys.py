@@ -1,2 +1,2 @@
-public_key = ''
+public_key = 'l'
 private_key = ''

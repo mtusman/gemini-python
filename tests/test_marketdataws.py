@@ -5,7 +5,7 @@ from gemini.marketdataws import MarketDataWS
 
 
 def client():
-    return MarketDataWS('btcusd')
+    return MarketDataWS('btcusd', sandbox=True)
 
 
 class TestMarketDataWS:

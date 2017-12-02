@@ -12,12 +12,11 @@ import hashlib
 import base64
 import time
 
-# Turn sandbox=True when running test or want to use the sandbox api
-
 
 class PrivateClient(PublicClient):
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, *, sandbox=False):
-        super().__init__()
+    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool)
+    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False):
+        super().__init__(sandbox)
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
         if sandbox:

@@ -11,8 +11,12 @@ import datetime
 
 
 class PublicClient(metaclass=Cached):
-    def __init__(self):
-        self.public_base_url = 'https://api.gemini.com/v1'
+    @typeassert(sandbox=bool)
+    def __init__(self, sandbox=False):
+        if sandbox:
+            self.public_base_url = 'https://api.sandbox.gemini.com/v1'
+        else:
+            self.public_base_url = 'https://api.gemini.com/v1'
 
     def symbols(self):
         """

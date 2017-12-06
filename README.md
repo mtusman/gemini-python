@@ -221,3 +221,15 @@ r.export_to_xml(r'/c/Users/user/Documents', 'accepted')
 - Export recorded data from market data or order events websocket into a matplotlib graph
 - Export recorded data from market data or order events websocket into a sqlite, postgresl or sql database
 - Add test for the cached metaclass
+
+# Change Log
+*0.2.0*
+- Created BaseWebsocket class 
+- Created OrderEventsWS class to interact with the order events websocket
+- Created MarketDataWS class to interact with the market data websocket 
+- Added greater support for heartbeat API's
+- Improved the Cached metaclass
+- Added support for sandbox urls 
+
+*0.0.1*
+- Original release

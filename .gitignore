@@ -1,6 +1,5 @@
 gemini/keys.txt 
 gemini/testing.py
-CODE_OF_CONDUCT.md
 *.pyc
 *~
 *.swp

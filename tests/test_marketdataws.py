@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.insert(0, '..')
-from gemini.marketdataws import MarketDataWS
+from gemini import MarketDataWS
 
 
 def client():

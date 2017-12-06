@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, '..')
-from gemini.public_client import PublicClient
+from gemini import PublicClient
 
 
 def client():

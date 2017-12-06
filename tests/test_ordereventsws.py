@@ -3,7 +3,7 @@ import sys
 import os
 import time
 sys.path.insert(0, '..')
-from gemini.ordereventsws import OrderEventsWS
+from gemini import OrderEventsWS
 
 
 def client():

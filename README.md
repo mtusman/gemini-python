@@ -9,6 +9,8 @@ will document some of the methods and features of the class.
 ```python
 import gemini
 r = gemini.PublicClient()
+# Alternatively, for a sandbox environment, set sandbox=True
+r = gemini.PublicClient(sandbox=True)
 ```
 #### PublicClient Methods
 - [symbols](https://docs.gemini.com/rest-api/#symbols)
@@ -29,7 +31,6 @@ r.get_current_order_book("BTCUSD")
 r.get_trade_history("BTCUSD")
 # Alternatively, it can be specified for a specific date
 r.get_trade_history("BTCUSD", since="17/06/2017")
-# Note: 'since' is a keyword argument!
 ```
 - [get_auction_history](https://docs.gemini.com/rest-api/#current-auction)
 ```python
@@ -37,7 +38,6 @@ r.get_trade_history("BTCUSD", since="17/06/2017")
 r.get_auction_history("BTCUSD")
 # Alternatively, it can be specified for a specific date
 r.get_auction_history("BTCUSD", since="17/06/2017")
-# Note: 'since' is again a keyword argument!
 ```
 
 ### PrivateClient
@@ -58,12 +58,14 @@ strings with the exception of 'options'.
 ```python
 import gemini
 r = gemini.PrivateClient("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY")
+# Alternatively, for a sandbox environment, set sandbox=True
+r = gemini.PrivateClient("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY", sandbox=True)
 ```
 
 #### PrivateClient Methods
 - [new_order](https://docs.gemini.com/rest-api/#new-order)
 ```python
-r.new_order("BTCUSD", "200", "6000", "buy", ["immediate-or-cancel"])
+r.new_order("BTCUSD", "200", "6000", "buy")
 ```
 - [cancel_order](https://docs.gemini.com/rest-api/#cancel-order)
 ```python
@@ -115,9 +117,107 @@ r.withdraw_to_address("ETH", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101", "20")
 ```python
 r.revive_hearbeat()
 ```
+### Websocket Client 
+If you'd prefer to recieve live updates you can either choose to subsribe to the public market data websocket or the private order events websocket. For more information about the difference between the two websockets visit the official [gemini documentation](https://docs.gemini.com/websocket-api).
+
+### MarketData Websocket 
+Market data is a public API that streams all the market data on a given symbol.
+```python
+import gemini
+r = gemini.MarketDataWS('btcusd')
+# Alternatively, for a sandbox environment, set sandbox=True
+r = gemini.MarketDataWS('btcusd', sandbox=True)
+```
+#### MarketData Websocket Methods 
+- get list of recorded trades
+```python
+r.trades
+```
+- get recorded bids
+```python
+r.bids
+```
+- get recorded asks
+```python
+r.asks
+```
+- get market book
+```python
+r.get_market_book()
+```
+- remove a recorded price from bids or asks
+```python
+# To remove a price from bids
+r.remove_from_bids('10000')
+# To remove a price from asks
+r.remove_from_asks('10000')
+```
+- search for a particular price recorded
+```python
+r.search_price('10000')
+```
+- export recorded trades to csv
+```python
+r.export_to_csv(r'/c/Users/user/Documents')
+```
+- export recorded trades to xml
+```python
+r.export_to_xml(r'/c/Users/user/Documents')
+```
+### OrderEvents Websocket
+Order events is a private API that gives you information about your orders in real time.When you connect, you get a book of your active orders. Then in real time you'll get information about order events like:
+
+- when your orders are accepted by the exchange
+- when your orders first appear on the book
+- fills
+- cancels
+- and more.
+
+
+Support for subscription filters is currently under development
+
+```python
+import gemini
+r = gemini.OrderEventsWS("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY")
+# Alternatively, for a sandbox environment, set sandbox=True
+r = gemini.OrderEventsWS("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY", sandbox=True)
+```
+
+#### OrderEvents Websocket Methods 
+- get order types
+```python
+"""All trades are categorised in terms of either subscription_ack', 'heartbeat', 
+'initial', 'accepted','rejected', 'booked', 'fill', 'cancelled', 
+'cancel_rejected' or 'closed'. The following will print these types"""
+r.get_order_types
+```
+- get order book
+```python
+# Will return all recorded orders
+r.get_order_book
+```
+- remove a recorded price from the order book
+```python
+# Arguments are: type and order_id
+r.remove_order('accepted', '12321123')
+```
+- export recorded trades to csv
+```python
+# Arguments are: directory and type
+# The following will export all 'accepted' orders to a csv format
+r.export_to_csv(r'/c/Users/user/Documents', 'accepted')
+```
+- export recorded trades to xml
+```python
+# Arguments are: directory and type. 
+# The following will export all 'accepted' orders to a xml format
+r.export_to_xml(r'/c/Users/user/Documents', 'accepted')
+```  
 
 # Under Development
-- ~~Base Websocket Class~~
-- [~~Support for Market Data Websocket~~](https://docs.gemini.com/websocket-api/#market-data)
-- [~~Support for Order Events Websocket~~](https://docs.gemini.com/websocket-api/#order-events)
-- ~~Greater support for hearbeat API's~~
+- Add filter options to order events websocket
+- Improve options to add and remove orders from market data websocket
+- Add options to choose whether a particular class is cached or not
+- Export recorded data from market data or order events websocket into a matplotlib graph
+- Export recorded data from market data or order events websocket into a sqlite, postgresl or sql database
+- Add test for the cached metaclass

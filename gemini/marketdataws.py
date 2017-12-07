@@ -20,11 +20,12 @@ class MarketDataWS(BaseWebSocket):
     @typeassert(product_id=str, sandbox=bool)
     def __init__(self, product_id, sandbox=False):
         if sandbox:
-            super().__init__(base_url='wss://api.gemini.com/v1/marketdata/{}'
-                             .format(product_id))
-        else:
             super().__init__(base_url='wss://api.sandbox.gemini.com/v1/marketdata/{}'
                              .format(product_id))
+        else:
+            super().__init__(base_url='wss://api.gemini.com/v1/marketdata/{}'
+                             .format(product_id))
+
         self.product_id = product_id
         self.asks = OrderedDict()
         self.bids = OrderedDict()
@@ -44,7 +45,6 @@ class MarketDataWS(BaseWebSocket):
         if msg['socket_sequence'] >= 1:
             event = msg['events'][0]
             if event['type'] == 'trade':
-                print(msg)
                 self.trades.append(event)
                 self.add(event['makerSide'], msg)
 

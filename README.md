@@ -1,10 +1,14 @@
-# gemini-python-wrapper
-A python client for the gemini API
+# gemini-python
+A python client for the Gemini API and Websocket
 
 ## Getting Started
+### Installation
+```python
+pip install gemini_python
+```
 ### PublicClient
 This endpoint doesn't require an api-key and can
-be used without having a gemini account. This README
+be used without having a Gemini account. This README
 will document some of the methods and features of the class.
 ```python
 import gemini
@@ -42,14 +46,14 @@ r.get_auction_history("BTCUSD", since="17/06/2017")
 
 ### PrivateClient
 This endpoint requires both a public and private key to access
-the API. Hence, one must have an account with gemini and register an
+the API. Hence, one must have an account with Gemini and register an
 application. So far, if the 'heartbeat' option is enabled for the API,
 the user must manually revive the heartbeat. Further options will be added
 in the future in order to avoid doing this manually.
 
 The payload of the requests
 will be a JSON object. Rather than being sent as the body of the POST request,
-gemini requires it to be base-64 encoded and stored as a header in the request.
+Gemini requires it to be base-64 encoded and stored as a header in the request.
 Adding a 'nonce' is optional for the API but is highly recommended. That's why
 the class will always send each request with a unique 'nonce'. An important
 point to note is that every argument for the methods of PrivateClient must be
@@ -118,7 +122,7 @@ r.withdraw_to_address("ETH", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101", "20")
 r.revive_hearbeat()
 ```
 ### Websocket Client 
-If you'd prefer to recieve live updates you can either choose to subsribe to the public market data websocket or the private order events websocket. For more information about the difference between the two websockets visit the official [gemini documentation](https://docs.gemini.com/websocket-api).
+If you'd prefer to recieve live updates you can either choose to subsribe to the public market data websocket or the private order events websocket. For more information about the difference between the two websockets visit the official [Gemini documentation](https://docs.gemini.com/websocket-api).
 
 ### MarketData Websocket 
 Market data is a public API that streams all the market data on a given symbol.

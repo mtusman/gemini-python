@@ -3,17 +3,19 @@
 #
 # This class is to be used as the parent for the MarketWebsocket and
 # OrderWebsocket
-from .cached import Cached
+
+from .meta import Meta
 from .debugly import typeassert
 from threading import Thread
 from websocket import create_connection, WebSocketConnectionClosedException
 import json
 
 
-class BaseWebSocket(metaclass=Cached):
-    @typeassert(base_url=str)
-    def __init__(self, base_url):
+class BaseWebSocket(metaclass=Meta):
+    @typeassert(base_url=str, cached=bool)
+    def __init__(self, base_url, cached=True):
         self.base_url = base_url
+        self.cached = cached
         self.ws = None
         self.messages = 0
 

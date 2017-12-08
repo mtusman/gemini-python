@@ -3,17 +3,19 @@
 #
 # A python wrapper for Gemini's public API
 
-from .cached import Cached
+from .meta import Meta
 from .debugly import typeassert
 import requests
 import time
 import datetime
 
 
-class PublicClient(metaclass=Cached):
-    @typeassert(sandbox=bool)
-    def __init__(self, sandbox=False):
-        if sandbox:
+class PublicClient(metaclass=Meta):
+    @typeassert(sandbox=bool, cached=bool)
+    def __init__(self, sandbox=False, cached=True):
+        self.sandbox = sandbox
+        self.cached = cached
+        if self.sandbox:
             self.public_base_url = 'https://api.sandbox.gemini.com/v1'
         else:
             self.public_base_url = 'https://api.gemini.com/v1'

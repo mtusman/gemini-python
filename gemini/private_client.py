@@ -14,9 +14,9 @@ import time
 
 
 class PrivateClient(PublicClient):
-    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool)
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False):
-        super().__init__(sandbox)
+    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool, cached=bool)
+    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False, cached=True):
+        super().__init__(sandbox, cached)
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
         if sandbox:

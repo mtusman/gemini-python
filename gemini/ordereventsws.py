@@ -20,12 +20,14 @@ import time
 
 
 class OrderEventsWS(BaseWebSocket):
-    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool)
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False):
+    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool, cached=bool)
+    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False, cached=True):
         if sandbox:
-            super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events')
+            super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events',
+                             cached=cached)
         else:
-            super().__init__(base_url='wss://api.gemini.com/v1/order/events')
+            super().__init__(base_url='wss://api.gemini.com/v1/order/events',
+                             cached=cached)
         self._public_key = PUBLIC_API_KEY
         self._private_key = PRIVATE_API_KEY
         self.order_book = OrderedDict()

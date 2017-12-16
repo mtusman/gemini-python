@@ -17,19 +17,41 @@ import hmac
 import hashlib
 import base64
 import time
+import urllib
 
 
 class OrderEventsWS(BaseWebSocket):
-    @typeassert(PUBLIC_API_KEY=str, PRIVATE_API_KEY=str, sandbox=bool, cached=bool)
-    def __init__(self, PUBLIC_API_KEY, PRIVATE_API_KEY, sandbox=False, cached=True):
-        if sandbox:
-            super().__init__(base_url='wss://api.sandbox.gemini.com/v1/order/events',
-                             cached=cached)
+    @typeassert(public_api_key=str, private_api_key=str, sandbox=bool,
+                cached=bool, symbolFilter=list, eventTypeFilter=list,
+                apiSessionFilter=list)
+    def __init__(self, public_api_key, private_api_key, sandbox=False,
+                 cached=True, symbolFilter=None, eventTypeFilter=None,
+                 apiSessionFilter=None):
+        filter_types = {'symbolFilter': symbolFilter,
+                        'eventTypeFilter': eventTypeFilter,
+                        'apiSessionFilter': apiSessionFilter}
+        if any(filter_type is not None for filter_type in filter_types.values()):
+            params = tuple()
+            for key, value in filter_types.items():
+                if value is not None:
+                    for item in value:
+                        params = params + ((key, item),)
+            if sandbox:
+                base_url = ('wss://api.sandbox.gemini.com/v1/order/events?' +
+                            urllib.parse.urlencode(params))
+            else:
+                base_url = ('wss://api.gemini.com/v1/order/events?' +
+                            urllib.parse.urlencode(params))
         else:
-            super().__init__(base_url='wss://api.gemini.com/v1/order/events',
-                             cached=cached)
-        self._public_key = PUBLIC_API_KEY
-        self._private_key = PRIVATE_API_KEY
+            if sandbox:
+                base_url = 'wss://api.sandbox.gemini.com/v1/order/events'
+            else:
+                base_url = 'wss://api.gemini.com/v1/order/events'
+
+        super().__init__(base_url=base_url,
+                         cached=cached)
+        self._public_key = public_api_key
+        self._private_key = private_api_key
         self.order_book = OrderedDict()
         self._reset_order_book()
 

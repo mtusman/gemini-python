@@ -11,6 +11,30 @@ def client():
 
 
 class TestOrderEventsWS:
+    def test_filter(self):
+        r = OrderEventsWS(public_key, private_key, sandbox=False)
+        assert r.base_url == 'wss://api.gemini.com/v1/order/events'
+        # Testing that symbol filter is working
+        r = OrderEventsWS(public_key, private_key, symbolFilter=['btcusd', 'ethusd'])
+        assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
+                              'symbolFilter=btcusd&symbolFilter=ethusd')
+        # Testing that event type filter is working
+        r = OrderEventsWS(public_key, private_key, eventTypeFilter=['accepted'])
+        assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
+                              'eventTypeFilter=accepted')
+        # Testing that api session filter is working
+        r = OrderEventsWS(public_key, private_key, apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
+        assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
+                              'apiSessionFilter=lVTsC8CfoxkbkHVBKjEu')
+        # Testing all filters work correctly when used together
+        r = OrderEventsWS(public_key, private_key, symbolFilter=['btcusd', 'ethusd'],
+                          eventTypeFilter=['accepted'],
+                          apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
+        assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
+                              'symbolFilter=btcusd&symbolFilter=ethusd&' +
+                              'eventTypeFilter=accepted&' +
+                              'apiSessionFilter=lVTsC8CfoxkbkHVBKjEu')
+
     def test_reset_order_book(self):
         r = client()
         r._reset_order_book()

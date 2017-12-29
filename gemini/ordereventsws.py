@@ -5,7 +5,6 @@
 # This is a private endpoint and so requires a private and public keys
 
 from .basewebsocket import BaseWebSocket
-from .debugly import typeassert
 from websocket import create_connection
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, tostring
@@ -21,9 +20,6 @@ import urllib
 
 
 class OrderEventsWS(BaseWebSocket):
-    @typeassert(public_api_key=str, private_api_key=str, sandbox=bool,
-                cached=bool, symbolFilter=list, eventTypeFilter=list,
-                apiSessionFilter=list)
     def __init__(self, public_api_key, private_api_key, sandbox=False,
                  cached=True, symbolFilter=None, eventTypeFilter=None,
                  apiSessionFilter=None):
@@ -72,7 +68,6 @@ class OrderEventsWS(BaseWebSocket):
         for order_type in order_types:
             self.order_book[order_type] = list()
 
-    @typeassert(method=str, payload=dict)
     def api_query(self, method, payload=None):
         if payload is None:
             payload = {}
@@ -129,7 +124,6 @@ class OrderEventsWS(BaseWebSocket):
         self._reset_order_book()
         print('Order book reset to empty')
 
-    @typeassert(type=str, order_id=str)
     def remove_order(self, type, order_id):
         """
         Will remove a order given a type within self.order_book and the
@@ -149,7 +143,6 @@ class OrderEventsWS(BaseWebSocket):
         except NameError as e:
             print('Order with order_id:{} does not exist '.format(order_id))
 
-    @typeassert(dir=str, type=str, newline_selection=str)
     def export_to_csv(self, dir, type, newline_selection=''):
         """
         Will export the orders of a specific type to a csv format. If the
@@ -196,7 +189,6 @@ class OrderEventsWS(BaseWebSocket):
         parent_elem.append(trade_elem)
         return parent_elem
 
-    @typeassert(dir=str, type=str)
     def export_to_xml(self, dir, type):
         """
         Will export the orders of a specific type to a xml format. If the

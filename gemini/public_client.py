@@ -4,14 +4,12 @@
 # A python wrapper for Gemini's public API
 
 from .meta import Meta
-from .debugly import typeassert
 import requests
 import time
 import datetime
 
 
 class PublicClient(metaclass=Meta):
-    @typeassert(sandbox=bool, cached=bool)
     def __init__(self, sandbox=False, cached=True):
         self.sandbox = sandbox
         self.cached = cached
@@ -31,7 +29,6 @@ class PublicClient(metaclass=Meta):
         r = requests.get(self.public_base_url + '/symbols')
         return r.json()
 
-    @typeassert(product_id=str)
     def get_ticker(self, product_id):
         """
         This endpoint retrieves information about recent trading
@@ -56,7 +53,6 @@ class PublicClient(metaclass=Meta):
         r = requests.get(self.public_base_url + '/pubticker/' + product_id)
         return r.json()
 
-    @typeassert(product_id=str)
     def get_current_order_book(self, product_id):
         """
         This endpoint retreives information about the recents orders.
@@ -82,7 +78,6 @@ class PublicClient(metaclass=Meta):
         r = requests.get(self.public_base_url + '/book/' + product_id)
         return r.json()
 
-    @typeassert(product_id=str, since=str)
     def get_trade_history(self, product_id, since=None):
         """
         This endpoint will return the trades that have executed since the
@@ -117,7 +112,6 @@ class PublicClient(metaclass=Meta):
                 product_id, int(self.timestamp)))
         return r.json()
 
-    @typeassert(product_id=str, since=str)
     def get_auction_history(self, product_id, since=None):
         """
         This will return the auction events, optionally including

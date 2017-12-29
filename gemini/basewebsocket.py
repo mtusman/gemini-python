@@ -5,14 +5,12 @@
 # OrderWebsocket
 
 from .meta import Meta
-from .debugly import typeassert
 from threading import Thread
 from websocket import create_connection, WebSocketConnectionClosedException
 import json
 
 
 class BaseWebSocket(metaclass=Meta):
-    @typeassert(base_url=str, cached=bool)
     def __init__(self, base_url, cached=True):
         self.base_url = base_url
         self.cached = cached

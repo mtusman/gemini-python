@@ -4,7 +4,6 @@
 # A python wrapper for Gemini's public API
 
 from .public_client import PublicClient
-from .debugly import typeassert
 import requests
 import json
 import hmac
@@ -14,7 +13,6 @@ import time
 
 
 class PrivateClient(PublicClient):
-    @typeassert(public_api_key=str, private_api_key=str, sandbox=bool, cached=bool)
     def __init__(self, public_api_key, private_api_key, sandbox=False, cached=True):
         super().__init__(sandbox, cached)
         self._public_key = public_api_key
@@ -24,7 +22,6 @@ class PrivateClient(PublicClient):
         else:
             self._base_url = 'https://api.gemini.com'
 
-    @typeassert(method=str, payload=dict)
     def api_query(self, method, payload=None):
         if payload is None:
             payload = {}
@@ -48,7 +45,6 @@ class PrivateClient(PublicClient):
         return r.json()
 
     # Order Placement API
-    @typeassert(symbol=str, amount=str, price=str, side=str, options=list)
     def new_order(self, symbol, amount, price, side, options=["immediate-or-cancel"]):
         """
         This endpoint is used for the creation of a new order.
@@ -97,7 +93,6 @@ class PrivateClient(PublicClient):
         }
         return self.api_query('/v1/order/new', payload)
 
-    @typeassert(order_id=str)
     def cancel_order(self, order_id):
         """
         Used for the cancellation of an order via it's ID. This ID is provided
@@ -160,7 +155,6 @@ class PrivateClient(PublicClient):
         return self.api_query('/v1/order/cancel/all')
 
     # Order Status API
-    @typeassert(order_id=str)
     def status_of_order(self, order_id):
         """
         Get's the status of an order.
@@ -211,7 +205,6 @@ class PrivateClient(PublicClient):
         """
         return self.api_query('/v1/orders')
 
-    @typeassert(symbol=str, limit_trades=int)
     def get_past_trades(self, symbol, limit_trades=None):
         """
         Returns all the past trades associated with the API.
@@ -266,7 +259,6 @@ class PrivateClient(PublicClient):
         """
         return self.api_query('/v1/balances')
 
-    @typeassert(currency=str, label=str)
     def create_deposit_address(self, currency, label=None):
         """
         This will create a new cryptocurrency deposit address with an optional label.
@@ -286,7 +278,6 @@ class PrivateClient(PublicClient):
             payload = {}
         return self.api_query('/v1/deposit/{}/newAddress'.format(currency), payload)
 
-    @typeassert(currency=str, address=str, amount=str)
     def withdraw_to_address(self, currency, address, amount):
         """
         This will allow you to withdraw currency from the address

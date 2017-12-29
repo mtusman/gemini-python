@@ -12,7 +12,11 @@ def typeassert(*ty_args, **ty_kwargs):
     def decorate(func):
         # Map function argument names to supplied types
         sig = signature(func)
-        bound_types = sig.bind_partial(*ty_args, **ty_kwargs).arguments
+        new_dict = {}
+        for key, value in ty_kwargs.items():
+            if key in sig.parameters.keys():
+                new_dict[key] = value
+        bound_types = sig.bind_partial(*ty_args, **new_dict).arguments
 
         @wraps(func)
         def wrapper(*args, **kwargs):

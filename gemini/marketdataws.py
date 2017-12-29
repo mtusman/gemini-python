@@ -4,7 +4,6 @@
 # A python wrapper for Gemini's market data websocket
 
 from .basewebsocket import BaseWebSocket
-from .debugly import typeassert
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, tostring
 from xml.dom import minidom
@@ -17,7 +16,7 @@ class MarketDataWS(BaseWebSocket):
     Market data is a public API that streams all the market data on a
     given symbol.
     """
-    @typeassert(product_id=str, sandbox=bool, cached=bool)
+
     def __init__(self, product_id, sandbox=False, cached=True):
         if sandbox:
             super().__init__(base_url='wss://api.sandbox.gemini.com/v1/marketdata/{}'
@@ -48,7 +47,6 @@ class MarketDataWS(BaseWebSocket):
                 self.trades.append(event)
                 self.add(event['makerSide'], msg)
 
-    @typeassert(side=str)
     def add(self, side, msg):
         """
         This method will create a custom order dict by extracting
@@ -84,7 +82,6 @@ class MarketDataWS(BaseWebSocket):
         self.asks, self.bids = OrderedDict(), OrderedDict()
         print('Market book reset to empty')
 
-    @typeassert(price=str)
     def search_price(self, price):
         """
         Will return the all the trades on either asks or bids with the
@@ -103,7 +100,6 @@ class MarketDataWS(BaseWebSocket):
             result = {'price': []}
         return result
 
-    @typeassert(price=str, order=dict)
     def add_to_bids(self, price, order):
         """
         Allows the user to manually add an order to bids given it's
@@ -124,14 +120,12 @@ class MarketDataWS(BaseWebSocket):
             print("Orders must be a dict with the following keys: 'eventId', "
                   "'timestamp', 'price', 'amount' and 'makerSide'")
 
-    @typeassert(price=str)
     def remove_from_bids(self, price):
         try:
             del self.bids[price]
         except KeyError as e:
             print('No order with price {} found'.format(price))
 
-    @typeassert(price=str, order=dict)
     def add_to_asks(self, price, order):
         """
         Allows the user to manually asks an order to bids given it's
@@ -152,14 +146,12 @@ class MarketDataWS(BaseWebSocket):
             print("Orders enter manually must be a dict with the following "
                   "keys: eventId, timestamp, price, amount and makerSide")
 
-    @typeassert(price=str)
     def remove_from_asks(self, price):
         try:
             del self.asks[price]
         except KeyError as e:
             print('No order with price {} found'.format(price))
 
-    @typeassert(dir=str, newline_selection=str)
     def export_to_csv(self, dir, newline_selection=''):
         """ Will export the trades recorded into a csv file.
         Note: directory for the file to be saved must be given as raw input.
@@ -190,7 +182,6 @@ class MarketDataWS(BaseWebSocket):
             parent_elem.append(trade_elem)
         return parent_elem
 
-    @typeassert(dir=str)
     def export_to_xml(self, dir):
         """
         Will export the trades recorded into a xml file.

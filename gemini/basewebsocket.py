@@ -54,7 +54,7 @@ class BaseWebSocket(metaclass=Meta):
         self.thread.join()
 
     def on_open(self):
-        print('--Subsribed--\n')
+        print('--Subscribed--\n')
 
     def on_message(self, msg):
         print(msg)

@@ -1,33 +1,44 @@
-from .keys import public_key, private_key
 import sys
-import os
 import time
 sys.path.insert(0, '..')
+import os
 from gemini import OrderEventsWS
 
 
 def client():
-    return OrderEventsWS(public_key, private_key, sandbox=True)
+    return OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                         os.environ['GEMINI_PRIVATE_KEY'],
+                         sandbox=True)
 
 
 class TestOrderEventsWS:
     def test_filter(self):
-        r = OrderEventsWS(public_key, private_key, sandbox=False)
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                          os.environ['GEMINI_PRIVATE_KEY'],
+                          sandbox=False)
         assert r.base_url == 'wss://api.gemini.com/v1/order/events'
         # Testing that symbol filter is working
-        r = OrderEventsWS(public_key, private_key, symbolFilter=['btcusd', 'ethusd'])
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                          os.environ['GEMINI_PRIVATE_KEY'],
+                          symbolFilter=['btcusd', 'ethusd'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'symbolFilter=btcusd&symbolFilter=ethusd')
         # Testing that event type filter is working
-        r = OrderEventsWS(public_key, private_key, eventTypeFilter=['accepted'])
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                          os.environ['GEMINI_PRIVATE_KEY'],
+                          eventTypeFilter=['accepted'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'eventTypeFilter=accepted')
         # Testing that api session filter is working
-        r = OrderEventsWS(public_key, private_key, apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                          os.environ['GEMINI_PRIVATE_KEY'],
+                          apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'apiSessionFilter=lVTsC8CfoxkbkHVBKjEu')
         # Testing all filters work correctly when used together
-        r = OrderEventsWS(public_key, private_key, symbolFilter=['btcusd', 'ethusd'],
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+                          os.environ['GEMINI_PRIVATE_KEY'],
+                          symbolFilter=['btcusd', 'ethusd'],
                           eventTypeFilter=['accepted'],
                           apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +

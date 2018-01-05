@@ -1,11 +1,13 @@
-from .keys import public_key, private_key
 import sys
 sys.path.insert(0, '..')
+import os
 from gemini import PrivateClient
 
 
 def client():
-    return PrivateClient(public_key, private_key, sandbox=True)
+    return PrivateClient(os.environ['GEMINI_PUBLIC_KEY'], 
+                         os.environ['GEMINI_PRIVATE_KEY'],
+                         sandbox=True)
 
 
 class TestPrivateClient:

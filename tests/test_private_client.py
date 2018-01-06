@@ -5,7 +5,7 @@ from gemini import PrivateClient
 
 
 def client():
-    return PrivateClient(os.environ['GEMINI_PUBLIC_KEY'], 
+    return PrivateClient(os.environ['GEMINI_PUBLIC_KEY'],
                          os.environ['GEMINI_PRIVATE_KEY'],
                          sandbox=True)
 
@@ -60,7 +60,7 @@ class TestPrivateClient:
 
     def test_cancel_session_orders(self):
         r = client()
-        new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
+        r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         cancel_session_orders = r.cancel_session_orders()
         assert type(cancel_session_orders) is dict
         assert "result" in cancel_session_orders
@@ -68,7 +68,7 @@ class TestPrivateClient:
 
     def test_cancel_orders(self):
         r = client()
-        new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
+        r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         cancel_all_orders = r.cancel_all_orders()
         assert type(cancel_all_orders) is dict
         assert "result" in cancel_all_orders
@@ -100,7 +100,7 @@ class TestPrivateClient:
 
     def test_active_orders(self):
         r = client()
-        new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
+        r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])
         active_orders = r.active_orders()
         assert type(active_orders) is list
 
@@ -113,11 +113,6 @@ class TestPrivateClient:
         r = client()
         get_trade_volume = r.get_trade_volume()
         assert type(get_trade_volume) is list
-
-    def test_get_balance(self):
-        r = client()
-        get_past_trades = r.get_past_trades("BTCUSD")
-        assert type(get_past_trades) is list
 
     def test_get_balance(self):
         r = client()

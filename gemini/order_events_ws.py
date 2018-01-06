@@ -4,7 +4,7 @@
 # A python wrapper for Gemini's order events websocket
 # This is a private endpoint and so requires a private and public keys
 
-from .basewebsocket import BaseWebSocket
+from .base_websocket import BaseWebSocket
 from websocket import create_connection
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, tostring

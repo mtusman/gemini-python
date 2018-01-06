@@ -3,7 +3,7 @@
 #
 # A python wrapper for Gemini's market data websocket
 
-from .basewebsocket import BaseWebSocket
+from .base_websocket import BaseWebSocket
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, tostring
 from xml.dom import minidom
@@ -32,14 +32,14 @@ class MarketDataWS(BaseWebSocket):
 
     def on_message(self, msg):
         """
-        Each msg will be a dict with the following keys: 'type',
-        'eventId','socket_sequence', 'timestamp' and 'events'.
+        Each msg will be a dict with the following keys: 'type','eventId',
+        'socket_sequence', 'timestamp' and 'events'.
 
-        'events' will be a list of dict's with each dict containing
-        the following keys: 'type', 'tid', 'price', 'amount' and
-        'makerSide'. If the first element of the list has type 'trade'
-        then the method will append the trade to self.trades and add
-        the event to either bids or asks depending on the 'makerSide'.
+        'events' will be a list of dict's with each dict containing the
+        following keys: 'type', 'tid', 'price', 'amount' and 'makerSide'. If
+        the first element of the list has type 'trade' then the method will
+        append the trade to self.trades and add the event to either bids or
+        asks depending on the 'makerSide'.
         """
         if msg['socket_sequence'] >= 1:
             event = msg['events'][0]

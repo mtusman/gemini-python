@@ -6,37 +6,37 @@ from gemini import OrderEventsWS
 
 
 def client():
-    return OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+    return OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                          os.environ['GEMINI_PRIVATE_KEY'],
                          sandbox=True)
 
 
 class TestOrderEventsWS:
     def test_filter(self):
-        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                           os.environ['GEMINI_PRIVATE_KEY'],
                           sandbox=False)
         assert r.base_url == 'wss://api.gemini.com/v1/order/events'
         # Testing that symbol filter is working
-        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                           os.environ['GEMINI_PRIVATE_KEY'],
                           symbolFilter=['btcusd', 'ethusd'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'symbolFilter=btcusd&symbolFilter=ethusd')
         # Testing that event type filter is working
-        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                           os.environ['GEMINI_PRIVATE_KEY'],
                           eventTypeFilter=['accepted'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'eventTypeFilter=accepted')
         # Testing that api session filter is working
-        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                           os.environ['GEMINI_PRIVATE_KEY'],
                           apiSessionFilter=['lVTsC8CfoxkbkHVBKjEu'])
         assert r.base_url == ('wss://api.gemini.com/v1/order/events?' +
                               'apiSessionFilter=lVTsC8CfoxkbkHVBKjEu')
         # Testing all filters work correctly when used together
-        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'], 
+        r = OrderEventsWS(os.environ['GEMINI_PUBLIC_KEY'],
                           os.environ['GEMINI_PRIVATE_KEY'],
                           symbolFilter=['btcusd', 'ethusd'],
                           eventTypeFilter=['accepted'],

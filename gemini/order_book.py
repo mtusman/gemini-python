@@ -3,17 +3,10 @@
 #
 # A python wrapper for Gemini which keeps an updated order book
 
-import time
+from .base_websocket import BaseWebSocket
 
-from .basewebsocket import BaseWebSocket
-from .debugly import typeassert
 
-class GeminiOrderBook(BaseWebSocket):
-    """
-    Market data is a public API that streams all the market data on a
-    given symbol.
-    """
-    @typeassert(product_id=str, sandbox=bool)
+class OrderBook(BaseWebSocket):
     def __init__(self, product_id, sandbox=False):
         if sandbox:
             super().__init__(base_url='wss://api.sandbox.gemini.com/v1/marketdata/{}'
@@ -27,6 +20,15 @@ class GeminiOrderBook(BaseWebSocket):
         self.bids = {}
 
     def on_message(self, msg):
+        """
+        Each msg will be a dict with the following keys: 'type','eventId',
+        'socket_sequence', 'timestamp' and 'events'.
+
+        'events' will be a list of dict's with each dict containing the
+        following keys: 'type', 'tid', 'price', 'amount' and 'makerSide'. The
+        method will iterate through every event with type 'change' and every
+        price to either ask or bid.
+        """
         if msg['socket_sequence'] >= 1:
             for event in msg['events']:
                 if event['type'] == 'change':
@@ -59,4 +61,3 @@ class GeminiOrderBook(BaseWebSocket):
     def reset_market_book(self):
         self.asks, self.bids = {}, {}
         print('Market book reset to empty')
-

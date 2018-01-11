@@ -66,7 +66,7 @@ class OrderEventsWS(BaseWebSocket):
         return headers
 
     def _connect(self):
-        self.ws = create_connection('wss://api.sandbox.gemini.com/v1/order/events',
+        self.ws = create_connection(self.base_url,
                                     header=self.api_query('/v1/order/events'),
                                     skip_utf8_validation=True)
 

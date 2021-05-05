@@ -311,6 +311,27 @@ class PrivateClient(PublicClient):
         }
         return self.api_query('/v1/withdraw/{}'.format(currency), payload)
 
+    # Transfers API
+    @typeassert(limit_transfers=int, show_completed_deposit_advances=bool)
+    def get_past_transfers(self, limit_transfers=None, show_completed_deposit_advances=False):
+        """
+        Returns all the past transfers associated with the API.
+        Providing a limit_trade is optional.
+        Whether to display completed deposit advances. False by default. Must be set True to activate. Defaults to False.
+
+        Args:
+            limit_trades(int): Default value is 500
+            show_completed_deposit_advances(bool): Default value is False
+
+        Results:
+            array: An array of of dicts of the past transfers
+        """
+        payload = {
+            "limit_transfers": 500 if limit_transfers is None else limit_transfers,
+            "show_completed_deposit_advances": show_completed_deposit_advances
+        }
+        return self.api_query('/v1/transfers', payload)
+
     # HeartBeat API
     def revive_hearbeat(self):
         """

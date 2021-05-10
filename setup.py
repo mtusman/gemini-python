@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='gemini-python',
-    version='0.2.0',
+    version='0.2.1',
     packages=['gemini'],
     url='https://github.com/mtusman/gemini-python',
     license='MIT',

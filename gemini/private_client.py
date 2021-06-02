@@ -97,6 +97,50 @@ class PrivateClient(PublicClient):
         }
         return self.api_query('/v1/order/new', payload)
 
+    # Order Placement API
+    @typeassert(symbol=str, amount=str, stop_price=str, limit_price=str, side=str)
+    def new_stop_limit_order(self, symbol, amount, stop_price, limit_price, side):
+        """
+        Args:
+            product_id(str): Can be any value in self.symbols()
+            amount(str): The amount of currency you want to buy.
+            stop_price(str): The price at which the limit order will be placed at the exchange
+            limit_price(str): The price at which you want to buy the currency/
+            side(str): Either "buy" or "ask"
+
+        Returns:
+            dict: These are the same fields returned by order/status
+            example: {
+                "order_id": "7419662",
+                "id": "7419662",
+                "symbol": "btcusd",
+                "exchange": "gemini",
+                "avg_execution_price": "0.00",
+                "side": "buy",
+                "type": "stop-limit",
+                "timestamp": "1572378649",
+                "timestampms": 1572378649018,
+                "is_live": True,
+                "is_cancelled": False,
+                "is_hidden": False,
+                "was_forced": False,
+                "executed_amount": "0",
+                "options": [],
+                "stop_price": "10400.00",
+                "price": "10500.00",
+                "original_amount": "0.01"
+            }
+        """
+        payload = {
+            'symbol': symbol,
+            'amount': amount,
+            'stop_price': stop_price,
+            'price': limit_price,
+            'side': side,
+            'type': 'exchange stop limit'
+        }
+        return self.api_query('/v1/order/new', payload)
+
     @typeassert(order_id=str)
     def cancel_order(self, order_id):
         """

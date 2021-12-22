@@ -30,6 +30,31 @@ class PublicClient(metaclass=Cached):
         return r.json()
 
     @typeassert(product_id=str)
+    def symbol_details(self, product_id):
+        """
+        This endpoint retrieves extra detail on supported symbols, such as 
+        minimum order size, tick size, quote increment and more.
+
+        Args:
+            product_id(str): Can be any value in self.symbols()
+
+        Returns:
+            dict:tick_size, quote_increment, min_order_size, status and wrap_enabled
+            example: {
+                "symbol":"BTCUSD",
+                "base_currency":"BTC",
+                "quote_currency":"USD",
+                "tick_size":1e-08,
+                "quote_increment":0.01,
+                "min_order_size":"0.00001",
+                "status":"open",
+                "wrap_enabled":false
+            }
+        """
+        r = requests.get(self.public_base_url + '/symbols/details/' + product_id)
+        return r.json()
+
+    @typeassert(product_id=str)
     def get_ticker(self, product_id):
         """
         This endpoint retrieves information about recent trading

@@ -72,6 +72,26 @@ class TestPrivateClient:
         assert "result" in cancel_all_orders
         assert "details" in cancel_all_orders
 
+    def test_wrap_order(self):
+        r = client()
+        wrap_order = r.wrap_order("GUSDUSD", "10", "buy")
+        assert type(wrap_order) is dict
+        # Endpoint not supported on sandbox
+        assert "error" in wrap_order #{'error': 'Encountered an error attempting to place a wrap/unwrap trade.'}
+        # assert "orderId" in wrap_order
+        # assert "pair" in wrap_order
+        # assert "price" in wrap_order
+        # assert "priceCurrency" in wrap_order
+        # assert "side" in wrap_order
+        # assert "quantity" in wrap_order 
+        # assert "quantityCurrency" in wrap_order
+        # assert "totalSpend" in wrap_order
+        # assert "totalSpendCurrency" in wrap_order 
+        # assert "fee" in wrap_order
+        # assert "feeCurrency" in wrap_order
+        # assert "depositFee" in wrap_order
+        # assert "depositFeeCurrency" in wrap_order
+
     def test_status_of_orders(self):
         r = client()
         new_order = r.new_order("BTCUSD", "0.02", "6400.28", "buy", ["maker-or-cancel"])

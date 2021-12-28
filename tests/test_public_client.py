@@ -44,3 +44,16 @@ class TestPublicClient:
         r = client()
         symbols = r.symbols()
         assert type(symbols) is list
+
+    def test_symbol_details(self):
+        r = client()
+        symbol_details = r.symbol_details("BTCUSD")
+        assert type(symbol_details) is dict
+        assert "symbol" in symbol_details
+        assert "base_currency" in symbol_details
+        assert "quote_currency" in symbol_details
+        assert "tick_size" in symbol_details
+        assert "quote_increment" in symbol_details
+        assert "min_order_size" in symbol_details
+        assert "status" in symbol_details
+        assert "wrap_enabled" in symbol_details

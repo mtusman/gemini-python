@@ -21,6 +21,10 @@ r = gemini.PublicClient(sandbox=True)
 ```python
 r.symbols()
 ```
+- [symbol_details](https://docs.gemini.com/rest-api/#symbol-details)
+```python
+r.symbol_details("BTCUSD")
+```
 - [get_ticker](https://docs.gemini.com/rest-api/#ticker)
 ```python
 r.get_ticker("BTCUSD")

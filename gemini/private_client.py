@@ -152,7 +152,6 @@ class PrivateClient(PublicClient):
             "side
             "quantity
             "quantityCurrency, totalSpend, totalSpendCurrency, fee, feeCurrency, depositFee, depositFeeCurrency
-                    example: { 
         """
         payload = {
             'amount': amount,

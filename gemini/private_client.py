@@ -134,6 +134,31 @@ class PrivateClient(PublicClient):
         }
         return self.api_query('/v1/order/cancel', payload)
 
+    @typeassert(symbol=str, amount=str, side=str)
+    def wrap_order(self, symbol, amount, side):
+        """
+        This endpoint wraps and unwraps Gemini issued assets.
+
+        Args:
+            symbol(str): Only GUSDUSD
+            amount(str): The amount of currency you want to buy/sell.
+            side(str): Either "buy" or "sell"
+
+        Results:
+            dict: Returns the orderId
+            "pair
+            "price
+            "priceCurrency
+            "side
+            "quantity
+            "quantityCurrency, totalSpend, totalSpendCurrency, fee, feeCurrency, depositFee, depositFeeCurrency
+        """
+        payload = {
+            'amount': amount,
+            'side': side,
+        }
+        return self.api_query('/v1/wrap/{}'.format(symbol), payload)
+
     def cancel_session_orders(self):
         """
         Used for the cancellation of all orders in a session.

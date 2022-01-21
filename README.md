@@ -47,6 +47,10 @@ r.get_auction_history("BTCUSD")
 # Alternatively, it can be specified for a specific date
 r.get_auction_history("BTCUSD", since="17/06/2017")
 ```
+- [get_ticker_v2](https://docs.gemini.com/rest-api/?python#ticker-v2)
+```python
+r.get_ticker_v2("BTCUSD")
+```
 
 ### PrivateClient
 This endpoint requires both a public and private key to access
@@ -129,10 +133,10 @@ r.withdraw_to_address("ETH", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101", "20")
 ```python
 r.revive_hearbeat()
 ```
-### Websocket Client 
+### Websocket Client
 If you'd prefer to recieve live updates you can either choose to subsribe to the public market data websocket or the private order events websocket. For more information about the difference between the two websockets visit the official [Gemini documentation](https://docs.gemini.com/websocket-api).
 
-### MarketData Websocket 
+### MarketData Websocket
 Market data is a public API that streams all the market data on a given symbol.
 ```python
 import gemini
@@ -140,7 +144,7 @@ r = gemini.MarketDataWS('btcusd')
 # Alternatively, for a sandbox environment, set sandbox=True
 r = gemini.MarketDataWS('btcusd', sandbox=True)
 ```
-#### MarketData Websocket Methods 
+#### MarketData Websocket Methods
 - get list of recorded trades
 ```python
 r.trades
@@ -195,11 +199,11 @@ r = gemini.OrderEventsWS("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY")
 r = gemini.OrderEventsWS("EXAMPLE_PUBLIC_KEY", "EXAMPLE_PRIVATE_KEY", sandbox=True)
 ```
 
-#### OrderEvents Websocket Methods 
+#### OrderEvents Websocket Methods
 - get order types
 ```python
-"""All trades are categorised in terms of either subscription_ack', 'heartbeat', 
-'initial', 'accepted','rejected', 'booked', 'fill', 'cancelled', 
+"""All trades are categorised in terms of either subscription_ack', 'heartbeat',
+'initial', 'accepted','rejected', 'booked', 'fill', 'cancelled',
 'cancel_rejected' or 'closed'. The following will print these types"""
 r.get_order_types
 ```
@@ -221,7 +225,7 @@ r.export_to_csv(r'/c/Users/user/Documents', 'accepted')
 ```
 - export recorded trades to xml
 ```python
-# Arguments are: directory and type. 
+# Arguments are: directory and type.
 # The following will export all 'accepted' orders to a xml format
 r.export_to_xml(r'/c/Users/user/Documents', 'accepted')
 ```  
@@ -236,12 +240,12 @@ r.export_to_xml(r'/c/Users/user/Documents', 'accepted')
 
 # Change Log
 *0.2.0*
-- Created BaseWebsocket class 
+- Created BaseWebsocket class
 - Created OrderEventsWS class to interact with the order events websocket
-- Created MarketDataWS class to interact with the market data websocket 
+- Created MarketDataWS class to interact with the market data websocket
 - Added greater support for heartbeat API's
 - Improved the Cached metaclass
-- Added support for sandbox urls 
+- Added support for sandbox urls
 
 *0.0.1*
 - Original release

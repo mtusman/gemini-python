@@ -32,7 +32,7 @@ class PublicClient(metaclass=Cached):
     @typeassert(product_id=str)
     def symbol_details(self, product_id):
         """
-        This endpoint retrieves extra detail on supported symbols, such as 
+        This endpoint retrieves extra detail on supported symbols, such as
         minimum order size, tick size, quote increment and more.
 
         Args:
@@ -51,7 +51,8 @@ class PublicClient(metaclass=Cached):
                 "wrap_enabled":false
             }
         """
-        r = requests.get(self.public_base_url + '/symbols/details/' + product_id)
+        r = requests.get(self.public_base_url
+                         + '/symbols/details/' + product_id)
         return r.json()
 
     @typeassert(product_id=str)
@@ -174,3 +175,58 @@ class PublicClient(metaclass=Cached):
             r = requests.get(self.public_base_url + '/auction/{}?since={}'.format(
                 product_id, int(self.timestamp)))
         return r.json()
+
+        @typeassert(product_id=str)
+        def get_ticker_v2(self, product_id):
+            """
+            This endpoint retrieves information about recent trading
+            activity for the symbol.
+
+            Args:
+                product_id(str): Can be any value in self.symbols()
+
+            Returns:
+                    dict: the Open, High, and Low price from 24 hours ago,
+                    the Close price (most recent trade),
+                    Hourly prices descending for past 24 hours,
+                    and the current bid and ask
+
+                    example: {
+                              "symbol": "BTCUSD",
+                              "open": "9121.76",
+                              "high": "9440.66",
+                              "low": "9106.51",
+                              "close": "9347.66",
+                              "changes": [
+                                "9365.1",
+                                "9386.16",
+                                "9373.41",
+                                "9322.56",
+                                "9268.89",
+                                "9265.38",
+                                "9245",
+                                "9231.43",
+                                "9235.88",
+                                "9265.8",
+                                "9295.18",
+                                "9295.47",
+                                "9310.82",
+                                "9335.38",
+                                "9344.03",
+                                "9261.09",
+                                "9265.18",
+                                "9282.65",
+                                "9260.01",
+                                "9225",
+                                "9159.5",
+                                "9150.81",
+                                "9118.6",
+                                "9148.01"
+                              ],
+                              "bid": "9345.70",
+                              "ask": "9347.67"
+                            }
+            """
+            r = requests.get('https://api.gemini.com/v2'
+                             + '/ticker/' + product_id)
+            return r.json()

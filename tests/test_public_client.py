@@ -1,6 +1,6 @@
+from gemini import PublicClient
 import sys
 sys.path.insert(0, '..')
-from gemini import PublicClient
 
 
 def client():
@@ -57,3 +57,16 @@ class TestPublicClient:
         assert "min_order_size" in symbol_details
         assert "status" in symbol_details
         assert "wrap_enabled" in symbol_details
+
+    def test_get_ticker_v2(self):
+        r = client()
+        ticker_v2 = r.get_ticker_v2("BTCUSD")
+        assert type(ticker_v2) is dict
+        assert "symbol" in ticker_v2
+        assert "open" in ticker_v2
+        assert "high" in ticker_v2
+        assert "low" in ticker_v2
+        assert "close" in ticker_v2
+        assert "changes" in ticker_v2
+        assert "bid" in ticker_v2
+        assert "ask" in ticker_v2

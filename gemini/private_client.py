@@ -236,8 +236,8 @@ class PrivateClient(PublicClient):
         """
         return self.api_query('/v1/orders')
 
-    @typeassert(symbol=str, limit_trades=int)
-    def get_past_trades(self, symbol, limit_trades=None):
+    @typeassert(symbol=str, limit_trades=int, since=float)
+    def get_past_trades(self, symbol, limit_trades=None, since=0):
         """
         Returns all the past trades associated with the API.
         Providing a limit_trade is optional.
@@ -249,11 +249,18 @@ class PrivateClient(PublicClient):
         Results:
             array: An array of of dicts of the past trades
         """
-        payload = {
+        payload1 = {
+            "symbol": symbol,
+            "limit_trades": 500 if limit_trades is None else limit_trades,
+            "timestamp": int(since)
+        }
+        payload2 = {
             "symbol": symbol,
             "limit_trades": 500 if limit_trades is None else limit_trades
         }
-        return self.api_query('/v1/mytrades', payload)
+        if since != 0:
+            return self.api_query('/v1/mytrades', payload1)
+        return self.api_query('/v1/mytrades', payload2)
 
     def get_trade_volume(self):
         """

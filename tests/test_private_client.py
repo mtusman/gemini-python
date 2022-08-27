@@ -151,7 +151,12 @@ class TestPrivateClient:
         r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
         withdraw_to_address = r.withdraw_to_address("ETH", "200", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101")
         assert type(withdraw_to_address) is dict
-
+    
+    def gas_fee_estimation(self):
+        r = PrivateClient("PUBLIC_KEY", "PRIVATE_CLIENT")
+        gas_fee_estimation = r.gas_fee_estimation("ETH", "200", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101")
+        assert type(gas_fee_estimation) is dict
+    
     def test_revive_heartbeat(self):
         r = client()
         revive_hearbeat = r.revive_hearbeat()

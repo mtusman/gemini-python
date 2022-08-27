@@ -125,6 +125,10 @@ r.create_deposit_address("BTCUSD", label="Main Bitcoin Address")
 ```python
 r.withdraw_to_address("ETH", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101", "20")
 ```
+- [gas_fee_estimation](https://docs.gemini.com/rest-api/#gas-fee-estimation)
+```python
+r.gas_fee_estimation("ETH", "0x0287b1B0032Dc42c16640F71BA06F1A87C3a7101", "20")
+```
 - [revive_hearbeat](https://docs.gemini.com/rest-api/#ticker)
 ```python
 r.revive_hearbeat()

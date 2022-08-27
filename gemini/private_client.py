@@ -335,6 +335,25 @@ class PrivateClient(PublicClient):
             "amount": amount
         }
         return self.api_query('/v1/withdraw/{}'.format(currency), payload)
+    
+    @typeassert(currency=str, address=str, amount=str)
+    def gas_fee_estimation (self, currency, address, amount):
+        """
+        This will allow you to estimate gas fees given a currency, address, and amount
+
+        Args:
+            currency(str): ETH/AAVE etc see Symbols and Minimums Page: https://docs.gemini.com/rest-api/?python#symbols-and-minimums
+            address(str): The address you want the money to be sent to
+            amount(str): Amount you want to transfer
+
+        Results:
+            dict: A dict of the following fields: currency, fee, isOverride, monthlyLimit, monthlyRemaining
+        """
+        payload = {
+            "address": address,
+            "amount": amount
+        }
+        return self.api_query('/v1/withdraw/{}/feeEstimate'.format(currency), payload)
 
     # Transfers API
     @typeassert(limit_transfers=int, show_completed_deposit_advances=bool)
